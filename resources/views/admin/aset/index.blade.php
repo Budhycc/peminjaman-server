@@ -23,6 +23,7 @@
                     <th>Merk</th>
                     <th>Kondisi</th>
                     <th>Status</th>
+                    <th>QR Code</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -45,7 +46,16 @@
                             <span class="status-badge">{{ ucfirst($aset->status) }}</span>
                         @endif
                     </td>
+                    <td style="text-align: center;">
+                        <div data-id="{{ $aset->kode_aset }}" data-name="{{ $aset->nama_aset }}" onclick="window.viewAssetQr(this)" style="display: inline-block; background: white; padding: 3px; border-radius: 6px; border: 1px solid #e5e7eb; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'" title="Klik untuk memperbesar QR: {{ $aset->kode_aset }}">
+                            {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(45)->margin(0)->generate($aset->kode_aset) !!}
+                        </div>
+                        <div id="qr-svg-{{ $aset->kode_aset }}" style="display: none;">
+                            {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->margin(0)->generate($aset->kode_aset) !!}
+                        </div>
+                    </td>
                     <td style="white-space: nowrap;">
+                        <button type="button" data-id="{{ $aset->kode_aset }}" data-name="{{ $aset->nama_aset }}" onclick="window.printAssetQr(this)" class="action-btn" style="background-color: rgba(16, 185, 129, 0.1); color: #10B981; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; border: none; cursor: pointer; margin-right: 4px;" title="Print QR"><i class="fas fa-print"></i></button>
                         <a href="{{ route('admin.assets.edit', $aset->id_aset) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
                         <form action="{{ route('admin.assets.destroy', $aset->id_aset) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus aset ini?');">
                             @csrf
@@ -56,11 +66,102 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="7" style="text-align: center;">Belum ada data aset.</td>
+                    <td colspan="8" style="text-align: center;">Belum ada data aset.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 </div>
+
+@push('scripts')
+<style>
+    /* Specific print styles for the card */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #print-area, #print-area * {
+            visibility: visible;
+        }
+        #print-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 40px;
+        }
+        .print-card {
+            border: 2px solid #000;
+            border-radius: 16px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            font-family: "Inter", -apple-system, sans-serif;
+            color: #000;
+            box-sizing: border-box;
+        }
+        .print-card h2 { margin: 0 0 20px 0; font-size: 22px; }
+        .print-card .qr-wrapper { display: inline-block; border: 2px dashed #000; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        .print-card img { width: 200px; height: 200px; display: block; margin: 0 auto; }
+        .print-card .label-text { font-size: 13px; font-weight: 600; }
+        .print-card .code-text { margin-top: 8px; font-size: 20px; font-weight: 800; font-family: monospace; }
+    }
+    
+    /* Hide print area on screen */
+    @media screen {
+        #print-area {
+            display: none;
+        }
+    }
+</style>
+
+<div id="print-area"></div>
+
+<!-- Modal Preview QR -->
+<div id="qr-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px);" onclick="if(event.target === this) this.style.display='none'">
+    <div style="background: white; padding: 30px; border-radius: 16px; text-align: center; max-width: 350px; width: 90%; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <button onclick="document.getElementById('qr-modal').style.display='none'" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; transition: color 0.2s;" onmouseover="this.style.color='#111827'" onmouseout="this.style.color='#9ca3af'">&times;</button>
+        <h2 id="modal-qr-title" style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #111827; font-weight: 700;"></h2>
+        <div id="modal-qr-content" style="margin-bottom: 15px; border: 2px dashed #cbd5e1; padding: 15px; border-radius: 12px; display: inline-block; background: #f8fafc;"></div>
+        <div style="font-size: 13px; color: #6b7280; font-weight: 600; letter-spacing: 1px;">KODE ASET</div>
+        <div id="modal-qr-code" style="font-size: 20px; font-weight: 800; font-family: monospace; color: #0f172a; margin-top: 5px; letter-spacing: 1px;"></div>
+    </div>
+</div>
+
+<script>
+    window.viewAssetQr = function(el) {
+        var kodeAset = el.getAttribute('data-id');
+        var namaAset = el.getAttribute('data-name');
+        var qrSvg = document.getElementById('qr-svg-' + kodeAset).innerHTML;
+        
+        document.getElementById('modal-qr-title').innerText = namaAset;
+        document.getElementById('modal-qr-content').innerHTML = qrSvg;
+        document.getElementById('modal-qr-code').innerText = kodeAset;
+        
+        var modal = document.getElementById('qr-modal');
+        modal.style.display = 'flex';
+    };
+
+    window.printAssetQr = function(btn) {
+        var kodeAset = btn.getAttribute('data-id');
+        var namaAset = btn.getAttribute('data-name');
+        
+        var qrSvg = document.getElementById('qr-svg-' + kodeAset).innerHTML;
+        var printArea = document.getElementById('print-area');
+        
+        printArea.innerHTML = '<div class="print-card">' +
+            '<h2>' + namaAset + '</h2>' +
+            '<div class="qr-wrapper">' + qrSvg + '</div>' +
+            '<div class="label-text">KODE ASET</div>' +
+            '<div class="code-text">' + kodeAset + '</div>' +
+            '</div>';
+            
+        window.print();
+    };
+</script>
+@endpush
 @endsection

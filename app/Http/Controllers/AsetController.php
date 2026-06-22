@@ -15,7 +15,6 @@ class AsetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'kode_aset' => 'required|string|max:50|unique:aset',
             'nama_aset' => 'required|string|max:100',
             'kategori' => 'required|string|max:50',
             'merk' => 'nullable|string|max:100',
@@ -23,6 +22,8 @@ class AsetController extends Controller
             'kondisi' => 'required|in:baik,rusak ringan,rusak berat',
             'status' => 'required|in:tersedia,dipinjam',
         ]);
+
+        $validated['kode_aset'] = 'AST-' . strtoupper(\Illuminate\Support\Str::random(8));
 
         $aset = Aset::create($validated);
         return response()->json($aset, 201);

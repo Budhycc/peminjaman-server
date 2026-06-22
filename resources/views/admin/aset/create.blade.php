@@ -21,10 +21,7 @@
 
     <form action="{{ route('admin.assets.store') }}" method="POST">
         @csrf
-        <div class="form-group">
-            <label for="kode_aset">Kode Aset</label>
-            <input type="text" name="kode_aset" id="kode_aset" class="form-control" value="{{ old('kode_aset') }}" required>
-        </div>
+        
 
         <div class="form-group">
             <label for="nama_aset">Nama Aset</label>
