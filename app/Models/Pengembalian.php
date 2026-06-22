@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pengembalian extends Model
 {
+    use \App\Models\Traits\HasUniqueNumberId;
+
     protected $table = "pengembalian";
     protected $primaryKey = "id_pengembalian";
 

@@ -2,6 +2,20 @@
 
 @section('title', 'Dashboard Overview')
 
+@push('styles')
+<style>
+    .chart-container {
+        background-color: var(--white);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid var(--border-color);
+        margin-bottom: 30px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@endpush
+
 @section('content')
 <div class="page-header">
     <h1>Dashboard Overview</h1>
@@ -25,6 +39,13 @@
         </div>
     </div>
     <div class="stat-card">
+        <div class="stat-icon returns" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-check"></i></div>
+        <div class="stat-details">
+            <h3>Aset Tersedia</h3>
+            <p class="stat-number">{{ $asetTersedia }}</p>
+        </div>
+    </div>
+    <div class="stat-card">
         <div class="stat-icon borrows"><i class="fas fa-hand-holding"></i></div>
         <div class="stat-details">
             <h3>Peminjaman Aktif</h3>
@@ -38,6 +59,14 @@
             <p class="stat-number">{{ $dikembalikanBulanIni }}</p>
         </div>
     </div>
+</div>
+
+<!-- Chart Section -->
+<div class="chart-container">
+    <div class="section-header">
+        <h2>Statistik Peminjaman ({{ date('Y') }})</h2>
+    </div>
+    <canvas id="peminjamanChart" height="80"></canvas>
 </div>
 
 <!-- Recent Activities Table -->
@@ -87,4 +116,44 @@
         </table>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('peminjamanChart').getContext('2d');
+        const monthlyData = @json($monthlyPeminjaman);
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Jumlah Peminjaman',
+                    data: monthlyData,
+                    backgroundColor: 'rgba(79, 70, 229, 0.8)',
+                    borderColor: '#4f46e5',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush
 @endsection

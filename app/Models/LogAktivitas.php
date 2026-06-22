@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class LogAktivitas extends Model
 {
+    use \App\Models\Traits\HasUniqueNumberId;
+
     protected $table = "log_aktivitas";
     protected $primaryKey = "id_log";
 

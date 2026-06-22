@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aset extends Model
 {
+    use \App\Models\Traits\HasUniqueNumberId;
+
     protected $table = "aset";
     protected $primaryKey = "id_aset";
 

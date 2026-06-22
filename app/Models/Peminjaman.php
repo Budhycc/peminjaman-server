@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Peminjaman extends Model
 {
+    use \App\Models\Traits\HasUniqueNumberId;
+
     protected $table = "peminjaman";
     protected $primaryKey = "id_peminjaman";
 
