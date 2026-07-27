@@ -70,99 +70,163 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 
 ## 3. Detail Endpoint API
 
+Semua endpoint kecuali `/api/login` wajib menyertakan **Bearer Token** pada *Header Authorization*:
+`Authorization: Bearer <token_anda>`
+Serta sangat disarankan untuk mengatur header `Accept: application/json`.
+
 ### 3.1. Autentikasi (`Auth`)
 
-| Method | Endpoint | Akses | Keterangan |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/login` | Publik | Login user untuk mendapatkan token. Body: `{ "username": "admin", "password": "password" }`. |
-| `POST` | `/api/logout`| Semua Role | Menghapus token (Logout). Membutuhkan *Bearer Token*. |
-| `GET`  | `/api/profile` | Semua Role | Menampilkan data user yang sedang login saat ini. |
+#### 1. Login
+- **Endpoint:** `POST /api/login`
+- **Akses:** Publik
+- **Deskripsi:** Mendapatkan bearer token untuk mengakses endpoint lainnya.
+- **Request Body (JSON):**
+  ```json
+  {
+      "username": "admin",
+      "password": "password"
+  }
+  ```
+- **Response Success (200):**
+  ```json
+  {
+      "access_token": "1|abcde...",
+      "token_type": "Bearer"
+  }
+  ```
 
----
+#### 2. Logout
+- **Endpoint:** `POST /api/logout`
+- **Akses:** Semua Role (Membutuhkan Token)
+- **Deskripsi:** Menghapus token yang sedang digunakan.
+- **Response Success (200):**
+  ```json
+  {
+      "message": "Logged out"
+  }
+  ```
 
-### 3.2. Manajemen Pengguna (`Users`)
+#### 3. Profil Pengguna
+- **Endpoint:** `GET /api/profile`
+- **Akses:** Semua Role (Membutuhkan Token)
+- **Deskripsi:** Menampilkan data pengguna yang sedang login.
+- **Response Success (200):**
+  ```json
+  {
+      "id_pengguna": 1,
+      "nama_pengguna": "Admin",
+      "Username": "admin",
+      "role": "admin",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif"
+  }
+  ```
 
-*Membutuhkan Bearer Token. Khusus **Admin**.*
+### 3.2. Manajemen Pengguna (`Users`) - Khusus Admin
 
-| Method | Endpoint | Keterangan |
-| :--- | :--- | :--- |
-| `GET` | `/api/users` | Menampilkan semua pengguna. |
-| `POST` | `/api/users` | Membuat pengguna baru. <br>**Body:** `{ "nama_pengguna": "Budi", "Username": "budi", "password": "123", "email": "budi@mail.com", "role": "user", "Unit_Kerja": "IT", "Status_Akun": "aktif" }` |
-| `GET` | `/api/users/{id}` | Menampilkan detail pengguna berdasarkan ID. |
-| `PUT` | `/api/users/{id}` | Memperbarui data pengguna. |
-| `DELETE` | `/api/users/{id}` | Menghapus pengguna. |
+#### 1. Lihat Semua Pengguna
+- **Endpoint:** `GET /api/users`
+- **Response Success (200):** Menampilkan array JSON berisi list semua akun pengguna.
 
----
+#### 2. Buat Pengguna Baru
+- **Endpoint:** `POST /api/users`
+- **Request Body (JSON):**
+  ```json
+  {
+      "nama_pengguna": "Budi",
+      "Username": "budi",
+      "password": "123",
+      "email": "budi@mail.com",
+      "role": "user",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif"
+  }
+  ```
+
+#### 3. Detail, Update, dan Hapus Pengguna
+- **GET** `/api/users/{id}` : Melihat profil pengguna berdasarkan ID.
+- **PUT** `/api/users/{id}` : Memperbarui data pengguna. Parameter body sama persis seperti saat Create (password boleh tidak dikirim jika tidak ingin diubah).
+- **DELETE** `/api/users/{id}` : Menghapus data pengguna tersebut dari sistem.
 
 ### 3.3. Manajemen Aset (`Assets`)
 
-*Membutuhkan Bearer Token.*
+#### 1. Lihat Semua Aset
+- **Endpoint:** `GET /api/assets`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan daftar lengkap semua aset, termasuk status ketersediaan dan foto.
 
-| Method | Endpoint | Akses | Keterangan |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/assets` | Semua Role | Menampilkan seluruh aset. |
-| `GET` | `/api/assets/available` | Semua Role | Menampilkan list spesifik aset yang statusnya sedang `tersedia`. |
-| `GET` | `/api/assets/{id}`| Semua Role | Menampilkan detail sebuah aset. |
-| `POST` | `/api/assets` | Admin | Menambahkan aset baru (QR Code akan dibuat otomatis). <br>**Body FormData:** `nama_Aset`, `status_aset`, `Row`, `foto_aset` (file/opsional) |
-| `PUT` | `/api/assets/{id}`| Admin | Mengubah data aset. (Gunakan method `POST` dengan `_method=PUT` di Postman jika mengirim file `foto_aset`) |
-| `DELETE` | `/api/assets/{id}`| Admin | Menghapus data aset dari sistem. |
+#### 2. Lihat Aset Tersedia
+- **Endpoint:** `GET /api/assets/available`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan daftar aset yang hanya dalam status `tersedia`.
 
-**Monitoring Status & QR Code Aset:**
+#### 3. Detail Aset
+- **Endpoint:** `GET /api/assets/{id}`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan info satu aset spesifik beserta data relasi QR code nya.
 
-| Method | Endpoint | Akses | Keterangan |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/assets/status` | Admin | Menampilkan total rekap jumlah aset yang *tersedia* dan *dipinjam*. |
-| `GET` | `/api/assets/borrowed`| Admin | Menampilkan list spesifik aset yang statusnya sedang `dipinjam`. |
-| `POST` | `/api/assets/{id}/generate-qr` | Admin | Membangkitkan ulang QR Code untuk suatu aset (QR otomatis terbuat saat aset ditambahkan). |
-| `POST` | `/api/scan-qr` | Admin | Validasi QR Code aset. <br>**Body JSON:** `{ "qr_code": "ASET-QR-AST-001-xxx" }` |
+#### 4. Tambah Aset Baru (Admin)
+- **Endpoint:** `POST /api/assets`
+- **Deskripsi:** Memasukkan aset ke dalam sistem. QR Code unik akan di-_generate_ secara otomatis.
+- **Request Body (FormData / `multipart/form-data`):**
+  - `nama_Aset`: (String) Wajib, contoh: Proyektor
+  - `status_aset`: (String) Wajib, contoh: tersedia
+  - `Row`: (String) Wajib, contoh: A1
+  - `foto_aset`: (File Gambar, Opsional) Format jpeg/png/jpg/webp, max 2MB.
 
----
+#### 5. Update & Hapus Aset (Admin)
+- **PUT** `/api/assets/{id}` : Mengubah informasi aset yang ada. <br>*Tips Postman:* Jika ingin mengubah/mengirim `foto_aset` ke endpoint ini, harap gunakan metode HTTP **POST** dan selipkan key `_method` dengan value `PUT` di tab form-data.
+- **DELETE** `/api/assets/{id}` : Menghapus keseluruhan data aset secara permanen.
+
+#### 6. Monitoring & QR Code (Admin)
+- **GET** `/api/assets/status` : Data statistik (rekap) jumlah aset tersedia versus dipinjam.
+- **GET** `/api/assets/borrowed` : List aset spesifik yang saat ini sedang dipinjam oleh user lain.
+- **POST** `/api/assets/{id}/generate-qr` : Mengubah (reset) ulang QR Code untuk suatu aset (secara default tidak perlu karena QR code sudah terbuat otomatis di awal penambahan aset).
+- **POST** `/api/scan-qr` : Mengecek keaslian QR Code aset.
+  - **Request Body (JSON):** `{ "qr_code": "ASET-QR-AST-001-xxx" }`
 
 ### 3.4. Peminjaman & Pengembalian (`Loans` & `Returns`)
 
-*Membutuhkan Bearer Token.*
-
-#### A. Peminjaman Aset (Loans)
-Proses pencatatan ketika user meminjam barang. Status aset akan otomatis berubah menjadi `dipinjam`.
-
-- **`GET /api/loans/my-history`** (Semua Role): Lihat transaksi peminjaman milik Anda sendiri berdasarkan akun yang login.
-- **`POST /api/loans`** (Semua Role): Buat pengajuan peminjaman.
-  **Body (JSON):**
+#### 1. Pengajuan Peminjaman
+- **Endpoint:** `POST /api/loans`
+- **Akses:** Semua Role
+- **Deskripsi:** Mencatat transaksi peminjaman. Sistem otomatis mengaitkannya dengan *user* yang sedang login (lewat token). Aset yang berhasil dipinjam akan dikunci statusnya menjadi `dipinjam`.
+- **Request Body (JSON):**
   ```json
   {
       "id_Aset": 1,
       "Tanggal_kembali": "2026-06-20 17:00:00"
   }
   ```
-  *(Catatan: `id_pengguna` otomatis diambil dari token login. Aset yang dipinjam harus berstatus "tersedia").*
-- **`GET /api/loans`** (Admin): Lihat seluruh transaksi peminjaman (untuk Admin).
-- **`GET /api/loans/{id}`** (Admin): Lihat detail transaksi peminjaman spesifik.
 
-#### B. Pengembalian Aset (Returns)
-Proses ketika user mengembalikan barang. Status peminjaman menjadi `dikembalikan` dan status aset kembali `tersedia`.
+#### 2. Riwayat Peminjaman Sendiri
+- **Endpoint:** `GET /api/loans/my-history`
+- **Akses:** Semua Role
+- **Deskripsi:** Menampilkan catatan semua transaksi peminjaman yang pernah dilakukan oleh akun pengguna Anda (yg sedang login).
 
-- **`POST /api/returns`** (Semua Role): Mencatat pengembalian aset.
-  **Body (JSON):**
+#### 3. Pengembalian Aset
+- **Endpoint:** `POST /api/returns`
+- **Akses:** Semua Role
+- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Status `peminjaman` diubah jadi `dikembalikan` dan aset bisa diakses (menjadi `tersedia`) oleh orang lain lagi.
+- **Request Body (JSON):**
   ```json
   {
       "id_peminjaman": 1,
       "kondisi_Aset": "baik"
   }
   ```
-- **`GET /api/returns`** (Admin): Lihat riwayat semua pengembalian.
 
----
+#### 4. Khusus Admin (Monitoring Peminjaman & Pengembalian)
+- **GET** `/api/loans` : Menarik rekap semua transaksi peminjaman dari semua user di sistem.
+- **GET** `/api/loans/{id}` : Detail suatu spesifik peminjaman.
+- **GET** `/api/returns` : Menarik rekap riwayat barang apa saja yang sudah dikembalikan oleh user mana saja.
 
-### 3.5. Log & Laporan (Admin Only)
+### 3.5. Log & Laporan (Khusus Admin)
 
-*Membutuhkan Bearer Token. Khusus **Admin**.*
-
-| Method | Endpoint | Keterangan |
-| :--- | :--- | :--- |
-| `GET` | `/api/logs` | Menampilkan log aktivitas seluruh user yang terekam (seperti aktivitas peminjaman/pengembalian). |
-| `GET` | `/api/reports/inventory` | Menampilkan laporan seluruh inventaris (semua aset). |
-| `GET` | `/api/reports/loans` | Menampilkan laporan khusus data peminjaman. |
-| `GET` | `/api/reports/returns`| Menampilkan laporan khusus data pengembalian. |
+- **GET** `/api/logs` : Memantau jejak log aktivitas (action log user seperti meminjam barang dan mengembalikan barang, lengkap beserta tanggal dan waktu).
+- **GET** `/api/reports/inventory` : Endpoint laporan khusus status akhir dan posisi seluruh aset (inventaris).
+- **GET** `/api/reports/loans` : Endpoint laporan khusus untuk semua pencatatan peminjaman.
+- **GET** `/api/reports/returns` : Endpoint laporan khusus rekap data pengembalian.
 
 ---
 
