@@ -21,6 +21,7 @@
                     <th>Nama Aset</th>
                     <th>Status</th>
                     <th>Row</th>
+                    <th style="text-align: center;">Kode QR</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -39,7 +40,30 @@
                         @endif
                     </td>
                     <td>{{ $aset->Row }}</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        @if($aset->qrCode)
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                <div>
+                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(40)->margin(0)->generate($aset->qrCode->kode_unik) !!}
+                                </div>
+                                <span style="font-size: 11px; font-family: monospace; font-weight: bold; color: #475569;">{{ $aset->qrCode->kode_unik }}</span>
+                            </div>
+                        @else
+                            <span style="font-size: 12px; color: #94a3b8; font-style: italic;">Belum ada QR</span>
+                        @endif
+                    </td>
                     <td style="white-space: nowrap;">
+                        @if($aset->qrCode)
+                            <button type="button" class="action-btn" style="background-color: rgba(59, 130, 246, 0.1); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; margin-right: 4px;" title="Lihat QR" data-id="{{ $aset->qrCode->kode_unik }}" data-name="{{ $aset->nama_Aset }}" onclick="viewAssetQr(this)">
+                                <i class="fas fa-qrcode"></i>
+                            </button>
+                            <button type="button" class="action-btn" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success); display: inline-flex; align-items: center; justify-content: center; border: none; cursor: pointer; margin-right: 4px;" title="Print QR" data-id="{{ $aset->qrCode->kode_unik }}" data-name="{{ $aset->nama_Aset }}" onclick="printAssetQr(this)">
+                                <i class="fas fa-print"></i>
+                            </button>
+                            <div id="qr-svg-{{ $aset->qrCode->kode_unik }}" style="display: none;">
+                                {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate($aset->qrCode->kode_unik) !!}
+                            </div>
+                        @endif
                         <a href="{{ route('admin.assets.edit', $aset->Id_Aset) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
                         <form action="{{ route('admin.assets.destroy', $aset->Id_Aset) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus aset ini?');">
                             @csrf
@@ -50,7 +74,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" style="text-align: center;">Belum ada data aset.</td>
+                    <td colspan="6" style="text-align: center;">Belum ada data aset.</td>
                 </tr>
                 @endforelse
             </tbody>

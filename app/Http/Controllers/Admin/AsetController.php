@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Aset;
+use App\Models\TableQrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AsetController extends Controller
 {
@@ -27,7 +29,13 @@ class AsetController extends Controller
             'Row' => 'nullable|string|max:50'
         ]);
 
-        Aset::create($validated);
+        $aset = Aset::create($validated);
+
+        TableQrCode::create([
+            'id_Aset' => $aset->Id_Aset,
+            'tanggal_generate' => now(),
+            'kode_unik' => 'AST-' . $aset->Id_Aset . '-' . strtoupper(Str::random(6))
+        ]);
 
         return redirect()->route('admin.assets.index')->with('success', 'Aset berhasil ditambahkan.');
     }

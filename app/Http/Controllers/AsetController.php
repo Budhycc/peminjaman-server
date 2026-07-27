@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aset;
+use App\Models\TableQrCode;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class AsetController extends Controller
 {
@@ -15,17 +17,21 @@ class AsetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_aset' => 'required|string|max:100',
-            'kategori' => 'required|string|max:50',
-            'merk' => 'nullable|string|max:100',
-            'lokasi' => 'required|string|max:100',
-            'kondisi' => 'required|in:baik,rusak ringan,rusak berat',
-            'status' => 'required|in:tersedia,dipinjam',
+            'nama_Aset' => 'required|string|max:100',
+            'status_aset' => 'required|in:tersedia,dipinjam',
+            'Row' => 'nullable|string|max:50',
         ]);
 
-        $validated['kode_aset'] = 'AST-' . strtoupper(\Illuminate\Support\Str::random(8));
-
         $aset = Aset::create($validated);
+
+        $qrCode = TableQrCode::create([
+            'id_Aset' => $aset->Id_Aset,
+            'tanggal_generate' => now(),
+            'kode_unik' => 'AST-' . $aset->Id_Aset . '-' . strtoupper(Str::random(6))
+        ]);
+
+        $aset->load('qrCode');
+
         return response()->json($aset, 201);
     }
 

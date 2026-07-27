@@ -20,4 +20,8 @@ class Aset extends Model
     public function peminjaman() {
         return $this->hasMany(Peminjaman::class, "id_Aset");
     }
+
+    public function qrCode() {
+        return $this->hasOne(TableQrCode::class, 'id_Aset', 'Id_Aset');
+    }
 }
