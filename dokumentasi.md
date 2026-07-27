@@ -103,8 +103,8 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 | `GET` | `/api/assets` | Semua Role | Menampilkan seluruh aset. |
 | `GET` | `/api/assets/available` | Semua Role | Menampilkan list spesifik aset yang statusnya sedang `tersedia`. |
 | `GET` | `/api/assets/{id}`| Semua Role | Menampilkan detail sebuah aset. |
-| `POST` | `/api/assets` | Admin | Menambahkan aset baru. <br>**Body JSON:** `{ "nama_Aset": "Proyektor", "status_aset": "tersedia", "Row": "A1" }` |
-| `PUT` | `/api/assets/{id}`| Admin | Mengubah data aset. |
+| `POST` | `/api/assets` | Admin | Menambahkan aset baru (QR Code akan dibuat otomatis). <br>**Body FormData:** `nama_Aset`, `status_aset`, `Row`, `foto_aset` (file/opsional) |
+| `PUT` | `/api/assets/{id}`| Admin | Mengubah data aset. (Gunakan method `POST` dengan `_method=PUT` di Postman jika mengirim file `foto_aset`) |
 | `DELETE` | `/api/assets/{id}`| Admin | Menghapus data aset dari sistem. |
 
 **Monitoring Status & QR Code Aset:**
@@ -113,8 +113,8 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/assets/status` | Admin | Menampilkan total rekap jumlah aset yang *tersedia* dan *dipinjam*. |
 | `GET` | `/api/assets/borrowed`| Admin | Menampilkan list spesifik aset yang statusnya sedang `dipinjam`. |
-| `POST` | `/api/assets/{id}/generate-qr` | Admin | Membangkitkan QR Code acak untuk suatu aset. |
-| `POST` | `/api/scan-qr` | Admin | Validasi QR Code aset. <br>**Body:** `{ "qr_code": "ASET-QR-AST-001-xxx" }` |
+| `POST` | `/api/assets/{id}/generate-qr` | Admin | Membangkitkan ulang QR Code untuk suatu aset (QR otomatis terbuat saat aset ditambahkan). |
+| `POST` | `/api/scan-qr` | Admin | Validasi QR Code aset. <br>**Body JSON:** `{ "qr_code": "ASET-QR-AST-001-xxx" }` |
 
 ---
 
