@@ -38,7 +38,7 @@ class PeminjamanController extends Controller
 
         $aset = Aset::findOrFail($validated['Id_Aset']);
 
-        if ($aset->status !== 'tersedia') {
+        if ($aset->status_aset !== 'tersedia') {
             return response()->json(['message' => 'Aset is not available for borrowing'], 400);
         }
 
@@ -46,20 +46,17 @@ class PeminjamanController extends Controller
         try {
             $peminjaman = Peminjaman::create([
                 'id_pengguna' => $request->user()->id_pengguna,
-                'Id_Aset' => $aset->Id_Aset,
+                'id_Aset' => $aset->Id_Aset,
                 'Tanggal_pinjam' => now(),
-                'Tanggal_kembali' => $validated['Tanggal_kembali'],
-                'status' => 'dipinjam',
-                'catatan' => $validated['catatan'] ?? null
+                'Tanggal_kembali' => $validated['Tanggal_kembali']
             ]);
 
-            $aset->update(['status' => 'dipinjam']);
+            $aset->update(['status_aset' => 'dipinjam']);
 
             LogAktivitas::create([
                 'id_pengguna' => $request->user()->id_pengguna,
-                'aktivitas' => 'Peminjaman aset ' . $aset->nama_aset,
-                'waktu' => now(),
-                'ip_address' => $request->ip()
+                'Aktivitas' => 'Peminjaman aset ' . $aset->nama_Aset,
+                'waktu' => now()
             ]);
 
             DB::commit();

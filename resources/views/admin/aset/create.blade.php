@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.assets.store') }}" method="POST">
+    <form action="{{ route('admin.assets.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         
 
@@ -39,6 +39,12 @@
         <div class="form-group">
             <label for="Row">Row</label>
             <input type="text" name="Row" id="Row" class="form-control" value="{{ old('Row') }}">
+        </div>
+
+        <div class="form-group">
+            <label for="foto_aset">Foto Aset</label>
+            <input type="file" name="foto_aset" id="foto_aset" class="form-control" accept="image/*">
+            <small class="text-muted" style="display: block; margin-top: 5px;">Format yang didukung: JPG, PNG, GIF, WEBP. Maksimal 2MB.</small>
         </div>
 
         <div style="margin-top: 30px;">

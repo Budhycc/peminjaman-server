@@ -7,6 +7,7 @@ use App\Models\Aset;
 use App\Models\TableQrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class AsetController extends Controller
 {
@@ -24,10 +25,15 @@ class AsetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_Aset' => 'required|string|max:255',
+            'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50'
+            'Row' => 'nullable|string|max:50',
+            'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
+
+        if ($request->hasFile('foto_aset')) {
+            $validated['foto_aset'] = $request->file('foto_aset')->store('fotos', 'public');
+        }
 
         $aset = Aset::create($validated);
 
@@ -51,10 +57,18 @@ class AsetController extends Controller
         $aset = Aset::findOrFail($id);
 
         $validated = $request->validate([
-            'nama_Aset' => 'required|string|max:255',
+            'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50'
+            'Row' => 'nullable|string|max:50',
+            'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
+
+        if ($request->hasFile('foto_aset')) {
+            if ($aset->foto_aset) {
+                Storage::disk('public')->delete($aset->foto_aset);
+            }
+            $validated['foto_aset'] = $request->file('foto_aset')->store('fotos', 'public');
+        }
 
         $aset->update($validated);
 
@@ -64,6 +78,11 @@ class AsetController extends Controller
     public function destroy($id)
     {
         $aset = Aset::findOrFail($id);
+
+        if ($aset->foto_aset) {
+            Storage::disk('public')->delete($aset->foto_aset);
+        }
+
         $aset->delete();
 
         return redirect()->route('admin.assets.index')->with('success', 'Aset berhasil dihapus.');

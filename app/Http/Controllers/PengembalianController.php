@@ -25,30 +25,26 @@ class PengembalianController extends Controller
 
         $peminjaman = Peminjaman::with('aset')->findOrFail($validated['Id_peminjaman']);
 
-        if ($peminjaman->status === 'dikembalikan') {
+        if (Pengembalian::where('id_peminjaman', $validated['Id_peminjaman'])->exists()) {
             return response()->json(['message' => 'Aset has already been returned'], 400);
         }
 
         DB::beginTransaction();
         try {
             $pengembalian = Pengembalian::create([
-                'Id_peminjaman' => $peminjaman->Id_peminjaman,
+                'id_peminjaman' => $peminjaman->Id_peminjaman,
                 'tanggal_kembali' => now(),
-                'kondisi_Aset' => $validated['kondisi_Aset'],
-                'catatan' => $validated['catatan'] ?? null
+                'kondisi_Aset' => $validated['kondisi_Aset']
             ]);
 
-            $peminjaman->update(['status' => 'dikembalikan']);
             $peminjaman->aset->update([
-                'status' => 'tersedia',
-                'kondisi' => $validated['kondisi_Aset']
+                'status_aset' => 'tersedia'
             ]);
 
             LogAktivitas::create([
                 'id_pengguna' => $request->user()->id_pengguna,
-                'aktivitas' => 'Pengembalian aset ' . $peminjaman->aset->nama_aset,
-                'waktu' => now(),
-                'ip_address' => $request->ip()
+                'Aktivitas' => 'Pengembalian aset ' . $peminjaman->aset->nama_Aset,
+                'waktu' => now()
             ]);
 
             DB::commit();

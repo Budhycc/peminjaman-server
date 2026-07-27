@@ -19,7 +19,7 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.assets.update', $aset->Id_Aset) }}" method="POST">
+    <form action="{{ route('admin.assets.update', $aset->Id_Aset) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -41,6 +41,17 @@
         <div class="form-group">
             <label for="Row">Row</label>
             <input type="text" name="Row" id="Row" class="form-control" value="{{ old('Row', $aset->Row) }}">
+        </div>
+
+        <div class="form-group">
+            <label for="foto_aset">Foto Aset (Opsional)</label>
+            @if($aset->foto_aset)
+                <div style="margin-bottom: 10px;">
+                    <img src="{{ asset('storage/' . $aset->foto_aset) }}" alt="{{ $aset->nama_Aset }}" style="max-height: 100px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                </div>
+            @endif
+            <input type="file" name="foto_aset" id="foto_aset" class="form-control" accept="image/*">
+            <small class="text-muted" style="display: block; margin-top: 5px;">Biarkan kosong jika tidak ingin mengubah foto. Format yang didukung: JPG, PNG, GIF, WEBP. Maksimal 2MB.</small>
         </div>
 
         <div style="margin-top: 30px;">

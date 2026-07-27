@@ -18,6 +18,7 @@
             <thead>
                 <tr>
                     <th>ID Aset</th>
+                    <th style="text-align: center;">Foto</th>
                     <th>Nama Aset</th>
                     <th>Status</th>
                     <th>Row</th>
@@ -29,6 +30,15 @@
                 @forelse($asets as $aset)
                 <tr>
                     <td>{{ $aset->Id_Aset }}</td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        @if($aset->foto_aset)
+                            <img src="{{ asset('storage/' . $aset->foto_aset) }}" alt="{{ $aset->nama_Aset }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 0 auto; display: block;">
+                        @else
+                            <div style="width: 50px; height: 50px; background-color: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 20px; margin: 0 auto;">
+                                <i class="fas fa-image"></i>
+                            </div>
+                        @endif
+                    </td>
                     <td>{{ $aset->nama_Aset }}</td>
                     <td>
                         @if($aset->status_aset == 'tersedia')

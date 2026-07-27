@@ -14,7 +14,8 @@ class Aset extends Model
     protected $fillable = [
         "nama_Aset",
         "status_aset",
-        "Row"
+        "Row",
+        "foto_aset"
     ];
 
     public function peminjaman() {

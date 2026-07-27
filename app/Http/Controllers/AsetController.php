@@ -6,6 +6,7 @@ use App\Models\Aset;
 use App\Models\TableQrCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class AsetController extends Controller
 {
@@ -20,7 +21,12 @@ class AsetController extends Controller
             'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
             'Row' => 'nullable|string|max:50',
+            'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
+
+        if ($request->hasFile('foto_aset')) {
+            $validated['foto_aset'] = $request->file('foto_aset')->store('fotos', 'public');
+        }
 
         $aset = Aset::create($validated);
 
@@ -46,14 +52,18 @@ class AsetController extends Controller
         $aset = Aset::findOrFail($id);
 
         $validated = $request->validate([
-            'kode_aset' => 'sometimes|string|max:50|unique:aset,kode_aset,' . $aset->Id_Aset . ',id_aset',
-            'nama_aset' => 'sometimes|string|max:100',
-            'kategori' => 'sometimes|string|max:50',
-            'merk' => 'nullable|string|max:100',
-            'lokasi' => 'sometimes|string|max:100',
-            'kondisi' => 'sometimes|in:baik,rusak ringan,rusak berat',
-            'status' => 'sometimes|in:tersedia,dipinjam',
+            'nama_Aset' => 'sometimes|string|max:100',
+            'status_aset' => 'sometimes|in:tersedia,dipinjam',
+            'Row' => 'nullable|string|max:50',
+            'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
+
+        if ($request->hasFile('foto_aset')) {
+            if ($aset->foto_aset) {
+                Storage::disk('public')->delete($aset->foto_aset);
+            }
+            $validated['foto_aset'] = $request->file('foto_aset')->store('fotos', 'public');
+        }
 
         $aset->update($validated);
         return response()->json($aset);
@@ -62,6 +72,11 @@ class AsetController extends Controller
     public function destroy($id)
     {
         $aset = Aset::findOrFail($id);
+
+        if ($aset->foto_aset) {
+            Storage::disk('public')->delete($aset->foto_aset);
+        }
+
         $aset->delete();
         return response()->json(['message' => 'Aset deleted successfully']);
     }
@@ -69,28 +84,36 @@ class AsetController extends Controller
     public function generateQr($id)
     {
         $aset = Aset::findOrFail($id);
-        // Simplification: We'll just generate a unique string or identifier for the QR code for now
-        $qrString = 'ASET-QR-' . $aset->kode_aset . '-' . uniqid();
-        $aset->update(['qr_code' => $qrString]);
-        return response()->json(['qr_code' => $qrString, 'message' => 'QR Code generated successfully']);
+        
+        // Delete existing QR if any
+        TableQrCode::where('id_Aset', $aset->Id_Aset)->delete();
+
+        $qrCode = TableQrCode::create([
+            'id_Aset' => $aset->Id_Aset,
+            'tanggal_generate' => now(),
+            'kode_unik' => 'AST-' . $aset->Id_Aset . '-' . strtoupper(Str::random(6))
+        ]);
+
+        return response()->json(['qr_code' => $qrCode->kode_unik, 'message' => 'QR Code generated successfully']);
     }
 
     public function scanQr(Request $request)
     {
         $request->validate(['qr_code' => 'required|string']);
-        $aset = Aset::where('qr_code', $request->qr_code)->first();
+        
+        $qrCode = TableQrCode::where('kode_unik', $request->qr_code)->with('aset')->first();
 
-        if (!$aset) {
+        if (!$qrCode || !$qrCode->aset) {
             return response()->json(['message' => 'Aset not found'], 404);
         }
 
-        return response()->json($aset);
+        return response()->json($qrCode->aset);
     }
 
     public function status()
     {
-        $tersedia = Aset::where('status', 'tersedia')->count();
-        $dipinjam = Aset::where('status', 'dipinjam')->count();
+        $tersedia = Aset::where('status_aset', 'tersedia')->count();
+        $dipinjam = Aset::where('status_aset', 'dipinjam')->count();
 
         return response()->json([
             'tersedia' => $tersedia,
@@ -101,11 +124,11 @@ class AsetController extends Controller
 
     public function available()
     {
-        return response()->json(Aset::where('status', 'tersedia')->get());
+        return response()->json(Aset::where('status_aset', 'tersedia')->get());
     }
 
     public function borrowed()
     {
-        return response()->json(Aset::where('status', 'dipinjam')->get());
+        return response()->json(Aset::where('status_aset', 'dipinjam')->get());
     }
 }
