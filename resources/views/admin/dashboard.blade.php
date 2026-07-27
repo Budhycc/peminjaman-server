@@ -19,7 +19,7 @@
 @section('content')
 <div class="page-header">
     <h1>Dashboard Overview</h1>
-    <p>Selamat datang kembali, Admin!</p>
+    <p>Selamat datang kembali, {{ auth()->user()->nama_pengguna ?? 'Admin' }}!</p>
 </div>
 
 <!-- Stats Cards -->
@@ -90,21 +90,19 @@
             <tbody>
                 @forelse($recentPeminjaman as $peminjaman)
                 <tr>
-                    <td>#PMJ-{{ str_pad($peminjaman->id_peminjaman, 3, '0', STR_PAD_LEFT) }}</td>
-                    <td>{{ $peminjaman->user->nama ?? 'Unknown User' }}</td>
-                    <td>{{ $peminjaman->aset->nama_aset ?? 'Unknown Asset' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->format('d M Y') }}</td>
+                    <td>#PMJ-{{ str_pad($peminjaman->Id_peminjaman, 3, '0', STR_PAD_LEFT) }}</td>
+                    <td>{{ $peminjaman->user->nama_pengguna ?? 'Unknown User' }}</td>
+                    <td>{{ $peminjaman->aset->nama_Aset ?? 'Unknown Asset' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($peminjaman->Tanggal_pinjam)->format('d M Y') }}</td>
                     <td>
-                        @if($peminjaman->status == 'dipinjam')
+                        @if(!$peminjaman->pengembalian)
                             <span class="status-badge active">Dipinjam</span>
-                        @elseif($peminjaman->status == 'dikembalikan')
-                            <span class="status-badge completed">Dikembalikan</span>
                         @else
-                            <span class="status-badge">{{ ucfirst($peminjaman->status) }}</span>
+                            <span class="status-badge completed">Dikembalikan</span>
                         @endif
                     </td>
                     <td>
-                        <a href="{{ url('/admin/loans/'.$peminjaman->id_peminjaman) }}" class="action-btn view" title="Lihat Detail"><i class="fas fa-eye"></i></a>
+                        <a href="{{ url('/admin/loans/'.$peminjaman->Id_peminjaman) }}" class="action-btn view" title="Lihat Detail"><i class="fas fa-eye"></i></a>
                     </td>
                 </tr>
                 @empty

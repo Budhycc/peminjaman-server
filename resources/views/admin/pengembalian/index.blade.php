@@ -29,13 +29,13 @@
                 @forelse($pengembalian as $item)
                 <tr>
                     <td>#KMB-{{ str_pad($item->id_pengembalian, 3, '0', STR_PAD_LEFT) }}</td>
-                    <td>{{ $item->peminjaman->user->nama ?? 'Unknown' }}</td>
-                    <td>{{ $item->peminjaman->aset->nama_aset ?? 'Unknown' }}</td>
+                    <td>{{ $item->peminjaman->user->nama_pengguna ?? 'Unknown' }}</td>
+                    <td>{{ $item->peminjaman->aset->nama_Aset ?? 'Unknown' }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</td>
                     <td>
-                        @if($item->kondisi_kembali == 'baik')
+                        @if($item->kondisi_Aset == 'baik')
                             <span class="status-badge completed">Baik</span>
-                        @elseif($item->kondisi_kembali == 'rusak ringan')
+                        @elseif($item->kondisi_Aset == 'rusak ringan')
                             <span class="status-badge pending">Rusak Ringan</span>
                         @else
                             <span class="status-badge rejected">Rusak Berat</span>

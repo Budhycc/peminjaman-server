@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('pengembalian', function (Blueprint $table) {
             $table->id('id_pengembalian');
-            $table->foreignId('id_peminjaman')->constrained('peminjaman', 'id_peminjaman')->onDelete('cascade');
+            $table->foreignId('id_peminjaman')->constrained('peminjaman', 'Id_peminjaman')->onDelete('cascade');
             $table->dateTime('tanggal_kembali');
-            $table->enum('kondisi_kembali', ['baik', 'rusak ringan', 'rusak berat']);
-            $table->text('catatan')->nullable();
+            $table->enum('kondisi_Aset', ['baik', 'rusak ringan', 'rusak berat']);
             $table->timestamps();
         });
     }

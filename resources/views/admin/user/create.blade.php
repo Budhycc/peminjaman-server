@@ -22,13 +22,13 @@
     <form action="{{ route('admin.users.store') }}" method="POST">
         @csrf
         <div class="form-group">
-            <label for="nama">Nama Lengkap</label>
-            <input type="text" name="nama" id="nama" class="form-control" value="{{ old('nama') }}" required>
+            <label for="nama_pengguna">Nama Lengkap</label>
+            <input type="text" name="nama_pengguna" id="nama_pengguna" class="form-control" value="{{ old('nama_pengguna') }}" required>
         </div>
 
         <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" name="username" id="username" class="form-control" value="{{ old('username') }}" required>
+            <label for="Username">Username</label>
+            <input type="text" name="Username" id="Username" class="form-control" value="{{ old('Username') }}" required>
         </div>
 
         <div class="form-group">

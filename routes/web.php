@@ -6,13 +6,18 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AsetController;
 use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
+use App\Http\Controllers\WebAuthController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
+Route::get('/login', [WebAuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [WebAuthController::class, 'login']);
+Route::post('/logout', [WebAuthController::class, 'logout'])->name('logout');
+
 // Admin Web Routes
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     
     // User CRUD

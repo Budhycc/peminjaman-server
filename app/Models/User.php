@@ -11,14 +11,16 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, \App\Models\Traits\HasUniqueNumberId;
 
-    protected $primaryKey = "id_user";
+    protected $primaryKey = "id_pengguna";
 
     protected $fillable = [
-        "nama",
-        "username",
+        "nama_pengguna",
+        "Username",
         "password",
         "email",
         "role",
+        "Unit_Kerja",
+        "Status_Akun",
     ];
 
     protected $hidden = [

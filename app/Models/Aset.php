@@ -9,20 +9,15 @@ class Aset extends Model
     use \App\Models\Traits\HasUniqueNumberId;
 
     protected $table = "aset";
-    protected $primaryKey = "id_aset";
+    protected $primaryKey = "Id_Aset";
 
     protected $fillable = [
-        "kode_aset",
-        "nama_aset",
-        "kategori",
-        "merk",
-        "lokasi",
-        "kondisi",
-        "status",
-        "qr_code"
+        "nama_Aset",
+        "status_aset",
+        "Row"
     ];
 
     public function peminjaman() {
-        return $this->hasMany(Peminjaman::class, "id_aset");
+        return $this->hasMany(Peminjaman::class, "id_Aset");
     }
 }

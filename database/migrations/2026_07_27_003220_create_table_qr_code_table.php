@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('peminjaman', function (Blueprint $table) {
-            $table->id('Id_peminjaman');
-            $table->foreignId('id_pengguna')->constrained('users', 'id_pengguna')->onDelete('cascade');
+        Schema::create('table_qr_code', function (Blueprint $table) {
+            $table->id('id_qr');
             $table->foreignId('id_Aset')->constrained('aset', 'Id_Aset')->onDelete('cascade');
-            $table->dateTime('Tanggal_pinjam');
-            $table->dateTime('Tanggal_kembali');
+            $table->dateTime('tanggal_generate');
+            $table->string('kode_unik', 100)->unique();
             $table->timestamps();
         });
     }
@@ -26,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('peminjaman');
+        Schema::dropIfExists('table_qr_code');
     }
 };

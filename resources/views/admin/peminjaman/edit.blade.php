@@ -19,55 +19,42 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.loans.update', $peminjaman->id_peminjaman) }}" method="POST">
+    <form action="{{ route('admin.loans.update', $peminjaman->Id_peminjaman) }}" method="POST">
         @csrf
         @method('PUT')
         
         <div class="form-group">
-            <label for="id_user">User Peminjam</label>
-            <select name="id_user" id="id_user" class="form-control" required>
+            <label for="id_pengguna">User Peminjam</label>
+            <select name="id_pengguna" id="id_pengguna" class="form-control" required>
                 <option value="">Pilih User</option>
                 @foreach($users as $user)
-                    <option value="{{ $user->id_user }}" {{ old('id_user', $peminjaman->id_user) == $user->id_user ? 'selected' : '' }}>
-                        {{ $user->nama }} ({{ $user->username }})
+                    <option value="{{ $user->id_pengguna }}" {{ old('id_pengguna', $peminjaman->id_pengguna) == $user->id_pengguna ? 'selected' : '' }}>
+                        {{ $user->nama_pengguna }} ({{ $user->Username }})
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="id_aset">Aset</label>
-            <select name="id_aset" id="id_aset" class="form-control" required>
+            <label for="Id_Aset">Aset</label>
+            <select name="Id_Aset" id="Id_Aset" class="form-control" required>
                 <option value="">Pilih Aset</option>
                 @foreach($asets as $aset)
-                    <option value="{{ $aset->id_aset }}" {{ old('id_aset', $peminjaman->id_aset) == $aset->id_aset ? 'selected' : '' }}>
-                        {{ $aset->kode_aset }} - {{ $aset->nama_aset }} ({{ $aset->kondisi }})
+                    <option value="{{ $aset->Id_Aset }}" {{ old('Id_Aset', $peminjaman->Id_Aset) == $aset->Id_Aset ? 'selected' : '' }}>
+                        {{ $aset->nama_Aset }} (Row: {{ $aset->Row }})
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="tanggal_pinjam">Tanggal Pinjam</label>
-            <input type="datetime-local" name="tanggal_pinjam" id="tanggal_pinjam" class="form-control" value="{{ old('tanggal_pinjam', \Carbon\Carbon::parse($peminjaman->tanggal_pinjam)->format('Y-m-d\TH:i')) }}" required>
+            <label for="Tanggal_pinjam">Tanggal Pinjam</label>
+            <input type="datetime-local" name="Tanggal_pinjam" id="Tanggal_pinjam" class="form-control" value="{{ old('Tanggal_pinjam', \Carbon\Carbon::parse($peminjaman->Tanggal_pinjam)->format('Y-m-d\TH:i')) }}" required>
         </div>
 
         <div class="form-group">
-            <label for="rencana_kembali">Rencana Kembali</label>
-            <input type="datetime-local" name="rencana_kembali" id="rencana_kembali" class="form-control" value="{{ old('rencana_kembali', \Carbon\Carbon::parse($peminjaman->rencana_kembali)->format('Y-m-d\TH:i')) }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control" required>
-                <option value="dipinjam" {{ old('status', $peminjaman->status) == 'dipinjam' ? 'selected' : '' }}>Dipinjam</option>
-                <option value="dikembalikan" {{ old('status', $peminjaman->status) == 'dikembalikan' ? 'selected' : '' }}>Dikembalikan</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="catatan">Catatan</label>
-            <textarea name="catatan" id="catatan" class="form-control" rows="3">{{ old('catatan', $peminjaman->catatan) }}</textarea>
+            <label for="Tanggal_kembali">Tanggal Kembali (Rencana)</label>
+            <input type="datetime-local" name="Tanggal_kembali" id="Tanggal_kembali" class="form-control" value="{{ old('Tanggal_kembali', \Carbon\Carbon::parse($peminjaman->Tanggal_kembali)->format('Y-m-d\TH:i')) }}" required>
         </div>
 
         <div style="margin-top: 30px;">

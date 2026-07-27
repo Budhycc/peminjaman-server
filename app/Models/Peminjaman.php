@@ -9,26 +9,24 @@ class Peminjaman extends Model
     use \App\Models\Traits\HasUniqueNumberId;
 
     protected $table = "peminjaman";
-    protected $primaryKey = "id_peminjaman";
+    protected $primaryKey = "Id_peminjaman";
 
     protected $fillable = [
-        "id_user",
-        "id_aset",
-        "tanggal_pinjam",
-        "rencana_kembali",
-        "status",
-        "catatan"
+        "id_pengguna",
+        "id_Aset",
+        "Tanggal_pinjam",
+        "Tanggal_kembali"
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, "id_user");
+        return $this->belongsTo(User::class, "id_pengguna", "id_pengguna");
     }
 
     public function aset() {
-        return $this->belongsTo(Aset::class, "id_aset");
+        return $this->belongsTo(Aset::class, "id_Aset", "Id_Aset");
     }
 
     public function pengembalian() {
-        return $this->hasOne(Pengembalian::class, "id_peminjaman");
+        return $this->hasOne(Pengembalian::class, "id_peminjaman", "Id_peminjaman");
     }
 }

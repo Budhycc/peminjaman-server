@@ -14,11 +14,10 @@ class Pengembalian extends Model
     protected $fillable = [
         "id_peminjaman",
         "tanggal_kembali",
-        "kondisi_kembali",
-        "catatan"
+        "kondisi_Aset"
     ];
 
     public function peminjaman() {
-        return $this->belongsTo(Peminjaman::class, "id_peminjaman");
+        return $this->belongsTo(Peminjaman::class, "id_peminjaman", "Id_peminjaman");
     }
 }

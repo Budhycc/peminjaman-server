@@ -15,22 +15,22 @@ class DashboardController extends Controller
     {
         $totalUsers = User::count();
         $totalAset = Aset::count();
-        $asetTersedia = Aset::where('status', 'tersedia')->count();
-        $peminjamanAktif = Peminjaman::where('status', 'dipinjam')->count();
+        $asetTersedia = Aset::where('status_aset', 'tersedia')->count();
+        $peminjamanAktif = Peminjaman::doesntHave('pengembalian')->count();
         
         $dikembalikanBulanIni = Pengembalian::whereMonth('tanggal_kembali', Carbon::now()->month)
                                             ->whereYear('tanggal_kembali', Carbon::now()->year)
                                             ->count();
 
-        $recentPeminjaman = Peminjaman::with(['user', 'aset'])
+        $recentPeminjaman = Peminjaman::with(['user', 'aset', 'pengembalian'])
                                       ->orderBy('created_at', 'desc')
                                       ->take(5)
                                       ->get();
 
         // Data for Chart: Peminjaman per month for the current year
-        $peminjamans = Peminjaman::whereYear('tanggal_pinjam', Carbon::now()->year)->get();
+        $peminjamans = Peminjaman::whereYear('Tanggal_pinjam', Carbon::now()->year)->get();
         $chartData = $peminjamans->groupBy(function($item) {
-            return Carbon::parse($item->tanggal_pinjam)->format('n'); // 1 to 12
+            return Carbon::parse($item->Tanggal_pinjam)->format('n'); // 1 to 12
         })->map->count()->toArray();
 
         // Prepare array for all 12 months

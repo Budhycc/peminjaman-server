@@ -9,6 +9,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .user-profile {
+            position: relative;
+            cursor: pointer;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 8px 0;
+            min-width: 150px;
+            z-index: 1000;
+            border: 1px solid #e5e7eb;
+            margin-top: 5px;
+        }
+        .user-profile:hover .dropdown-menu {
+            display: block;
+        }
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #374151;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .dropdown-item:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+        .dropdown-item i {
+            margin-right: 8px;
+            color: #6b7280;
+        }
+    </style>
     @stack('styles')
 </head>
 <body>
@@ -56,15 +99,35 @@
                         <span class="badge">0</span>
                     </div>
                     <div class="user-profile">
-                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Admin Profile">
-                        <span class="user-name">Admin</span>
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama_pengguna ?? 'Admin') }}&background=0D8ABC&color=fff" alt="Admin Profile">
+                        <span class="user-name">{{ auth()->user()->nama_pengguna ?? 'Admin' }}</span>
                         <i class="fas fa-chevron-down"></i>
+                        <div class="dropdown-menu">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="dropdown-item">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </header>
 
             <!-- Page Content -->
             <div class="content-wrapper">
+                @if(session('success'))
+                    <div style="background-color: #d1fae5; color: #065f46; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #34d399;">
+                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i> {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div style="background-color: #fee2e2; color: #991b1b; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f87171;">
+                        <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i> {{ session('error') }}
+                    </div>
+                @endif
+
                 @yield('content')
             </div>
         </main>

@@ -40,7 +40,7 @@ class AsetController extends Controller
         $aset = Aset::findOrFail($id);
 
         $validated = $request->validate([
-            'kode_aset' => 'sometimes|string|max:50|unique:aset,kode_aset,' . $aset->id_aset . ',id_aset',
+            'kode_aset' => 'sometimes|string|max:50|unique:aset,kode_aset,' . $aset->Id_Aset . ',id_aset',
             'nama_aset' => 'sometimes|string|max:100',
             'kategori' => 'sometimes|string|max:50',
             'merk' => 'nullable|string|max:100',

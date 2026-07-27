@@ -24,12 +24,12 @@
         @method('PUT')
         
         <div class="form-group">
-            <label for="id_peminjaman">Peminjaman</label>
-            <select name="id_peminjaman" id="id_peminjaman" class="form-control" required>
+            <label for="Id_peminjaman">Peminjaman</label>
+            <select name="Id_peminjaman" id="Id_peminjaman" class="form-control" required>
                 <option value="">Pilih Peminjaman</option>
                 @foreach($peminjamans as $peminjaman)
-                    <option value="{{ $peminjaman->id_peminjaman }}" {{ old('id_peminjaman', $pengembalian->id_peminjaman) == $peminjaman->id_peminjaman ? 'selected' : '' }}>
-                        #PMJ-{{ str_pad($peminjaman->id_peminjaman, 3, '0', STR_PAD_LEFT) }} - {{ $peminjaman->user->nama ?? 'Unknown' }} - {{ $peminjaman->aset->nama_aset ?? 'Unknown' }}
+                    <option value="{{ $peminjaman->Id_peminjaman }}" {{ old('Id_peminjaman', $pengembalian->Id_peminjaman) == $peminjaman->Id_peminjaman ? 'selected' : '' }}>
+                        #PMJ-{{ str_pad($peminjaman->Id_peminjaman, 3, '0', STR_PAD_LEFT) }} - {{ $peminjaman->user->nama_pengguna ?? 'Unknown' }} - {{ $peminjaman->aset->nama_Aset ?? 'Unknown' }}
                     </option>
                 @endforeach
             </select>
@@ -41,17 +41,12 @@
         </div>
 
         <div class="form-group">
-            <label for="kondisi_kembali">Kondisi Aset Saat Dikembalikan</label>
-            <select name="kondisi_kembali" id="kondisi_kembali" class="form-control" required>
-                <option value="baik" {{ old('kondisi_kembali', $pengembalian->kondisi_kembali) == 'baik' ? 'selected' : '' }}>Baik</option>
-                <option value="rusak ringan" {{ old('kondisi_kembali', $pengembalian->kondisi_kembali) == 'rusak ringan' ? 'selected' : '' }}>Rusak Ringan</option>
-                <option value="rusak berat" {{ old('kondisi_kembali', $pengembalian->kondisi_kembali) == 'rusak berat' ? 'selected' : '' }}>Rusak Berat</option>
+            <label for="kondisi_Aset">Kondisi Aset Saat Dikembalikan</label>
+            <select name="kondisi_Aset" id="kondisi_Aset" class="form-control" required>
+                <option value="baik" {{ old('kondisi_Aset', $pengembalian->kondisi_Aset) == 'baik' ? 'selected' : '' }}>Baik</option>
+                <option value="rusak ringan" {{ old('kondisi_Aset', $pengembalian->kondisi_Aset) == 'rusak ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+                <option value="rusak berat" {{ old('kondisi_Aset', $pengembalian->kondisi_Aset) == 'rusak berat' ? 'selected' : '' }}>Rusak Berat</option>
             </select>
-        </div>
-
-        <div class="form-group">
-            <label for="catatan">Catatan</label>
-            <textarea name="catatan" id="catatan" class="form-control" rows="3">{{ old('catatan', $pengembalian->catatan) }}</textarea>
         </div>
 
         <div style="margin-top: 30px;">

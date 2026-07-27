@@ -12,13 +12,13 @@ class LogAktivitas extends Model
     protected $primaryKey = "id_log";
 
     protected $fillable = [
-        "id_user",
-        "aktivitas",
+        "id_pengguna",
+        "Aktivitas",
         "waktu",
-        "ip_address"
+        "deskripsi"
     ];
 
     public function user() {
-        return $this->belongsTo(User::class, "id_user");
+        return $this->belongsTo(User::class, "id_pengguna", "id_pengguna");
     }
 }

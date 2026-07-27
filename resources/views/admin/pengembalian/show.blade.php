@@ -14,15 +14,15 @@
     </div>
 
     <div style="margin-bottom: 20px;">
-        <strong>ID Peminjaman:</strong> #PMJ-{{ str_pad($pengembalian->peminjaman->id_peminjaman ?? 0, 3, '0', STR_PAD_LEFT) }}
+        <strong>ID Peminjaman:</strong> #PMJ-{{ str_pad($pengembalian->peminjaman->Id_peminjaman ?? 0, 3, '0', STR_PAD_LEFT) }}
     </div>
     
     <div style="margin-bottom: 20px;">
-        <strong>User Peminjam:</strong> {{ $pengembalian->peminjaman->user->nama ?? 'Unknown' }}
+        <strong>User Peminjam:</strong> {{ $pengembalian->peminjaman->user->nama_pengguna ?? 'Unknown' }}
     </div>
 
     <div style="margin-bottom: 20px;">
-        <strong>Aset:</strong> {{ $pengembalian->peminjaman->aset->nama_aset ?? 'Unknown' }} (Kode: {{ $pengembalian->peminjaman->aset->kode_aset ?? '-' }})
+        <strong>Aset:</strong> {{ $pengembalian->peminjaman->aset->nama_Aset ?? 'Unknown' }} (Row: {{ $pengembalian->peminjaman->aset->Row ?? '-' }})
     </div>
 
     <div style="margin-bottom: 20px;">
@@ -31,18 +31,13 @@
 
     <div style="margin-bottom: 20px;">
         <strong>Kondisi Saat Kembali:</strong> 
-        @if($pengembalian->kondisi_kembali == 'baik')
+        @if($pengembalian->kondisi_Aset == 'baik')
             <span class="status-badge completed">Baik</span>
-        @elseif($pengembalian->kondisi_kembali == 'rusak ringan')
+        @elseif($pengembalian->kondisi_Aset == 'rusak ringan')
             <span class="status-badge pending">Rusak Ringan</span>
         @else
             <span class="status-badge rejected">Rusak Berat</span>
         @endif
-    </div>
-
-    <div style="margin-bottom: 20px;">
-        <strong>Catatan:</strong> <br>
-        {{ $pengembalian->catatan ?: '-' }}
     </div>
 
     <div style="margin-top: 30px;">

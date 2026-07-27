@@ -23,20 +23,20 @@ class PeminjamanController extends Controller
 
     public function myHistory(Request $request)
     {
-        $userId = $request->user()->id_user;
-        $peminjaman = Peminjaman::with('aset')->where('id_user', $userId)->get();
+        $userId = $request->user()->id_pengguna;
+        $peminjaman = Peminjaman::with('aset')->where('id_pengguna', $userId)->get();
         return response()->json($peminjaman);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_aset' => 'required|exists:aset,id_aset',
-            'rencana_kembali' => 'required|date|after:now',
+            'Id_Aset' => 'required|exists:aset,id_aset',
+            'Tanggal_kembali' => 'required|date|after:now',
             'catatan' => 'nullable|string'
         ]);
 
-        $aset = Aset::findOrFail($validated['id_aset']);
+        $aset = Aset::findOrFail($validated['Id_Aset']);
 
         if ($aset->status !== 'tersedia') {
             return response()->json(['message' => 'Aset is not available for borrowing'], 400);
@@ -45,10 +45,10 @@ class PeminjamanController extends Controller
         DB::beginTransaction();
         try {
             $peminjaman = Peminjaman::create([
-                'id_user' => $request->user()->id_user,
-                'id_aset' => $aset->id_aset,
-                'tanggal_pinjam' => now(),
-                'rencana_kembali' => $validated['rencana_kembali'],
+                'id_pengguna' => $request->user()->id_pengguna,
+                'Id_Aset' => $aset->Id_Aset,
+                'Tanggal_pinjam' => now(),
+                'Tanggal_kembali' => $validated['Tanggal_kembali'],
                 'status' => 'dipinjam',
                 'catatan' => $validated['catatan'] ?? null
             ]);
@@ -56,7 +56,7 @@ class PeminjamanController extends Controller
             $aset->update(['status' => 'dipinjam']);
 
             LogAktivitas::create([
-                'id_user' => $request->user()->id_user,
+                'id_pengguna' => $request->user()->id_pengguna,
                 'aktivitas' => 'Peminjaman aset ' . $aset->nama_aset,
                 'waktu' => now(),
                 'ip_address' => $request->ip()

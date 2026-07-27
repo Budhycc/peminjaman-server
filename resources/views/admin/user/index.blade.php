@@ -28,9 +28,9 @@
             <tbody>
                 @forelse($users as $user)
                 <tr>
-                    <td>#USR-{{ $user->id_user }}</td>
-                    <td>{{ $user->nama }}</td>
-                    <td>{{ $user->username }}</td>
+                    <td>#USR-{{ $user->id_pengguna }}</td>
+                    <td>{{ $user->nama_pengguna }}</td>
+                    <td>{{ $user->Username }}</td>
                     <td>{{ $user->email }}</td>
                     <td>
                         @if($user->role == 'admin')
@@ -40,8 +40,8 @@
                         @endif
                     </td>
                     <td style="white-space: nowrap;">
-                        <a href="{{ route('admin.users.edit', $user->id_user) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
-                        <form action="{{ route('admin.users.destroy', $user->id_user) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus user ini?');">
+                        <a href="{{ route('admin.users.edit', $user->id_pengguna) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form action="{{ route('admin.users.destroy', $user->id_pengguna) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus user ini?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="action-btn reject" title="Hapus" style="cursor: pointer;"><i class="fas fa-trash"></i></button>

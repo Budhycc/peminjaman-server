@@ -17,47 +17,31 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Kode</th>
+                    <th>ID Aset</th>
                     <th>Nama Aset</th>
-                    <th>Kategori</th>
-                    <th>Merk</th>
-                    <th>Kondisi</th>
                     <th>Status</th>
-                    <th>QR Code</th>
+                    <th>Row</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($asets as $aset)
                 <tr>
-                    <td>{{ $aset->kode_aset }}</td>
-                    <td>{{ $aset->nama_aset }}</td>
-                    <td>{{ $aset->kategori }}</td>
-                    <td>{{ $aset->merk }}</td>
-                    <td>{{ ucfirst($aset->kondisi) }}</td>
+                    <td>{{ $aset->Id_Aset }}</td>
+                    <td>{{ $aset->nama_Aset }}</td>
                     <td>
-                        @if($aset->status == 'tersedia')
+                        @if($aset->status_aset == 'tersedia')
                             <span class="status-badge completed">Tersedia</span>
-                        @elseif($aset->status == 'dipinjam')
+                        @elseif($aset->status_aset == 'dipinjam')
                             <span class="status-badge active">Dipinjam</span>
-                        @elseif($aset->status == 'rusak')
-                            <span class="status-badge rejected">Rusak</span>
                         @else
-                            <span class="status-badge">{{ ucfirst($aset->status) }}</span>
+                            <span class="status-badge">{{ ucfirst($aset->status_aset) }}</span>
                         @endif
                     </td>
-                    <td style="text-align: center;">
-                        <div data-id="{{ $aset->kode_aset }}" data-name="{{ $aset->nama_aset }}" onclick="window.viewAssetQr(this)" style="display: inline-block; background: white; padding: 3px; border-radius: 6px; border: 1px solid #e5e7eb; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.8)'" onmouseout="this.style.transform='scale(1)'" title="Klik untuk memperbesar QR: {{ $aset->kode_aset }}">
-                            {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(45)->margin(0)->generate($aset->kode_aset) !!}
-                        </div>
-                        <div id="qr-svg-{{ $aset->kode_aset }}" style="display: none;">
-                            {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->margin(0)->generate($aset->kode_aset) !!}
-                        </div>
-                    </td>
+                    <td>{{ $aset->Row }}</td>
                     <td style="white-space: nowrap;">
-                        <button type="button" data-id="{{ $aset->kode_aset }}" data-name="{{ $aset->nama_aset }}" onclick="window.printAssetQr(this)" class="action-btn" style="background-color: rgba(16, 185, 129, 0.1); color: #10B981; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; border: none; cursor: pointer; margin-right: 4px;" title="Print QR"><i class="fas fa-print"></i></button>
-                        <a href="{{ route('admin.assets.edit', $aset->id_aset) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
-                        <form action="{{ route('admin.assets.destroy', $aset->id_aset) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus aset ini?');">
+                        <a href="{{ route('admin.assets.edit', $aset->Id_Aset) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
+                        <form action="{{ route('admin.assets.destroy', $aset->Id_Aset) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus aset ini?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="action-btn reject" title="Hapus" style="cursor: pointer;"><i class="fas fa-trash"></i></button>

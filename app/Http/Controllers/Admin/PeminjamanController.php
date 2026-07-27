@@ -12,7 +12,7 @@ class PeminjamanController extends Controller
 {
     public function index()
     {
-        $peminjaman = Peminjaman::with(['user', 'aset'])->orderBy('id_peminjaman', 'desc')->get();
+        $peminjaman = Peminjaman::with(['user', 'aset'])->orderBy('Id_peminjaman', 'desc')->get();
         return view('admin.peminjaman.index', compact('peminjaman'));
     }
 
@@ -26,10 +26,10 @@ class PeminjamanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_user' => 'required|exists:users,id_user',
-            'id_aset' => 'required|exists:aset,id_aset',
-            'tanggal_pinjam' => 'required|date',
-            'rencana_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
+            'id_pengguna' => 'required|exists:users,id_user',
+            'Id_Aset' => 'required|exists:aset,id_aset',
+            'Tanggal_pinjam' => 'required|date',
+            'Tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'catatan' => 'nullable|string'
         ]);
 
@@ -38,7 +38,7 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::create($validated);
 
         // Update status aset
-        $aset = Aset::find($validated['id_aset']);
+        $aset = Aset::find($validated['Id_Aset']);
         if ($aset) {
             $aset->update(['status' => 'dipinjam']);
         }
@@ -65,26 +65,26 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
 
         $validated = $request->validate([
-            'id_user' => 'required|exists:users,id_user',
-            'id_aset' => 'required|exists:aset,id_aset',
-            'tanggal_pinjam' => 'required|date',
-            'rencana_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
+            'id_pengguna' => 'required|exists:users,id_user',
+            'Id_Aset' => 'required|exists:aset,id_aset',
+            'Tanggal_pinjam' => 'required|date',
+            'Tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'status' => 'required|in:dipinjam,dikembalikan',
             'catatan' => 'nullable|string'
         ]);
 
         // Handle aset status if aset changed
-        if ($peminjaman->id_aset != $validated['id_aset']) {
-            $oldAset = Aset::find($peminjaman->id_aset);
+        if ($peminjaman->Id_Aset != $validated['Id_Aset']) {
+            $oldAset = Aset::find($peminjaman->Id_Aset);
             if ($oldAset) $oldAset->update(['status' => 'tersedia']);
             
-            $newAset = Aset::find($validated['id_aset']);
+            $newAset = Aset::find($validated['Id_Aset']);
             if ($newAset && $validated['status'] == 'dipinjam') {
                 $newAset->update(['status' => 'dipinjam']);
             }
         } else {
             // Same aset, just check status
-            $aset = Aset::find($validated['id_aset']);
+            $aset = Aset::find($validated['Id_Aset']);
             if ($aset) {
                 if ($validated['status'] == 'dipinjam') {
                     $aset->update(['status' => 'dipinjam']);
@@ -104,7 +104,7 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
         
         if ($peminjaman->status == 'dipinjam') {
-            $aset = Aset::find($peminjaman->id_aset);
+            $aset = Aset::find($peminjaman->Id_Aset);
             if ($aset) {
                 $aset->update(['status' => 'tersedia']);
             }

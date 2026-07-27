@@ -87,7 +87,7 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 | Method | Endpoint | Keterangan |
 | :--- | :--- | :--- |
 | `GET` | `/api/users` | Menampilkan semua pengguna. |
-| `POST` | `/api/users` | Membuat pengguna baru. <br>**Body:** `{ "nama": "Budi", "username": "budi", "password": "123", "email": "budi@mail.com", "role": "user" }` |
+| `POST` | `/api/users` | Membuat pengguna baru. <br>**Body:** `{ "nama_pengguna": "Budi", "Username": "budi", "password": "123", "email": "budi@mail.com", "role": "user", "Unit_Kerja": "IT", "Status_Akun": "aktif" }` |
 | `GET` | `/api/users/{id}` | Menampilkan detail pengguna berdasarkan ID. |
 | `PUT` | `/api/users/{id}` | Memperbarui data pengguna. |
 | `DELETE` | `/api/users/{id}` | Menghapus pengguna. |
@@ -103,7 +103,7 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 | `GET` | `/api/assets` | Semua Role | Menampilkan seluruh aset. |
 | `GET` | `/api/assets/available` | Semua Role | Menampilkan list spesifik aset yang statusnya sedang `tersedia`. |
 | `GET` | `/api/assets/{id}`| Semua Role | Menampilkan detail sebuah aset. |
-| `POST` | `/api/assets` | Admin | Menambahkan aset baru. <br>**Body JSON:** `{ "kode_aset": "AST-001", "nama_aset": "Proyektor", "kategori": "Elektronik", "merk": "Epson", "lokasi": "Ruang A", "kondisi": "baik", "status": "tersedia" }` |
+| `POST` | `/api/assets` | Admin | Menambahkan aset baru. <br>**Body JSON:** `{ "nama_Aset": "Proyektor", "status_aset": "tersedia", "Row": "A1" }` |
 | `PUT` | `/api/assets/{id}`| Admin | Mengubah data aset. |
 | `DELETE` | `/api/assets/{id}`| Admin | Menghapus data aset dari sistem. |
 
@@ -130,12 +130,11 @@ Proses pencatatan ketika user meminjam barang. Status aset akan otomatis berubah
   **Body (JSON):**
   ```json
   {
-      "id_aset": 1,
-      "rencana_kembali": "2026-06-20 17:00:00",
-      "catatan": "Pinjam untuk keperluan presentasi"
+      "id_Aset": 1,
+      "Tanggal_kembali": "2026-06-20 17:00:00"
   }
   ```
-  *(Catatan: `id_user` otomatis diambil dari token login. Aset yang dipinjam harus berstatus "tersedia").*
+  *(Catatan: `id_pengguna` otomatis diambil dari token login. Aset yang dipinjam harus berstatus "tersedia").*
 - **`GET /api/loans`** (Admin): Lihat seluruh transaksi peminjaman (untuk Admin).
 - **`GET /api/loans/{id}`** (Admin): Lihat detail transaksi peminjaman spesifik.
 
@@ -147,8 +146,7 @@ Proses ketika user mengembalikan barang. Status peminjaman menjadi `dikembalikan
   ```json
   {
       "id_peminjaman": 1,
-      "kondisi_kembali": "baik", // pilihan: baik, rusak ringan, rusak berat
-      "catatan": "Aset dikembalikan dengan aman"
+      "kondisi_Aset": "baik"
   }
   ```
 - **`GET /api/returns`** (Admin): Lihat riwayat semua pengembalian.
@@ -173,8 +171,8 @@ Proses ketika user mengembalikan barang. Status peminjaman menjadi `dikembalikan
 Untuk memahami bagaimana aplikasi bekerja dari ujung ke ujung, Anda bisa menguji alur (flow) ini di Postman secara berurutan:
 
 1. **Login User**: Panggil `POST /api/login` menggunakan kredensial yang ada (contoh: user dengan role "user"). Pasang token di Header `Authorization` untuk request selanjutnya.
-2. **Cek Aset Tersedia**: Panggil `GET /api/assets/available`. Pilih salah satu ID aset (misal: `id_aset: 1`).
-3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `id_aset: 1` di dalam body. Status aset sekarang otomatis menjadi *dipinjam*.
+2. **Cek Aset Tersedia**: Panggil `GET /api/assets/available`. Pilih salah satu ID aset (misal: `Id_Aset: 1`).
+3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `id_Aset: 1` di dalam body. Status aset sekarang otomatis menjadi *dipinjam*.
 4. **Cek Riwayat Sendiri**: Panggil `GET /api/loans/my-history` untuk memastikan transaksi peminjaman tercatat untuk Anda. Catat ID peminjaman (misal: `id_peminjaman: 1`).
 5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `id_peminjaman: 1` ke dalam body beserta kondisi saat dikembalikan.
 6. **Cek Aktivitas (Hanya Admin)**: Panggil `GET /api/logs` menggunakan akun **Admin** untuk memverifikasi bahwa sistem merekam waktu saat user meminjam dan mengembalikan aset.

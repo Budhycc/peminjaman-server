@@ -22,42 +22,37 @@
     <form action="{{ route('admin.loans.store') }}" method="POST">
         @csrf
         <div class="form-group">
-            <label for="id_user">User Peminjam</label>
-            <select name="id_user" id="id_user" class="form-control" required>
+            <label for="id_pengguna">User Peminjam</label>
+            <select name="id_pengguna" id="id_pengguna" class="form-control" required>
                 <option value="">Pilih User</option>
                 @foreach($users as $user)
-                    <option value="{{ $user->id_user }}" {{ old('id_user') == $user->id_user ? 'selected' : '' }}>
-                        {{ $user->nama }} ({{ $user->username }})
+                    <option value="{{ $user->id_pengguna }}" {{ old('id_pengguna') == $user->id_pengguna ? 'selected' : '' }}>
+                        {{ $user->nama_pengguna }} ({{ $user->Username }})
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="id_aset">Aset</label>
-            <select name="id_aset" id="id_aset" class="form-control" required>
+            <label for="Id_Aset">Aset</label>
+            <select name="Id_Aset" id="Id_Aset" class="form-control" required>
                 <option value="">Pilih Aset</option>
                 @foreach($asets as $aset)
-                    <option value="{{ $aset->id_aset }}" {{ old('id_aset') == $aset->id_aset ? 'selected' : '' }}>
-                        {{ $aset->kode_aset }} - {{ $aset->nama_aset }} ({{ $aset->kondisi }})
+                    <option value="{{ $aset->Id_Aset }}" {{ old('Id_Aset') == $aset->Id_Aset ? 'selected' : '' }}>
+                        {{ $aset->nama_Aset }} (Row: {{ $aset->Row }})
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="tanggal_pinjam">Tanggal Pinjam</label>
-            <input type="datetime-local" name="tanggal_pinjam" id="tanggal_pinjam" class="form-control" value="{{ old('tanggal_pinjam') }}" required>
+            <label for="Tanggal_pinjam">Tanggal Pinjam</label>
+            <input type="datetime-local" name="Tanggal_pinjam" id="Tanggal_pinjam" class="form-control" value="{{ old('Tanggal_pinjam') }}" required>
         </div>
 
         <div class="form-group">
-            <label for="rencana_kembali">Rencana Kembali</label>
-            <input type="datetime-local" name="rencana_kembali" id="rencana_kembali" class="form-control" value="{{ old('rencana_kembali') }}" required>
-        </div>
-
-        <div class="form-group">
-            <label for="catatan">Catatan</label>
-            <textarea name="catatan" id="catatan" class="form-control" rows="3">{{ old('catatan') }}</textarea>
+            <label for="Tanggal_kembali">Tanggal Kembali (Rencana)</label>
+            <input type="datetime-local" name="Tanggal_kembali" id="Tanggal_kembali" class="form-control" value="{{ old('Tanggal_kembali') }}" required>
         </div>
 
         <div style="margin-top: 30px;">

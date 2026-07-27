@@ -12,15 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('aset', function (Blueprint $table) {
-            $table->id('id_aset');
-            $table->string('kode_aset', 50);
-            $table->string('nama_aset', 100);
-            $table->string('kategori', 50);
-            $table->string('merk', 100)->nullable();
-            $table->string('lokasi', 100);
-            $table->enum('kondisi', ['baik', 'rusak ringan', 'rusak berat']);
-            $table->enum('status', ['tersedia', 'dipinjam']);
-            $table->text('qr_code')->nullable();
+            $table->id('Id_Aset');
+            $table->string('nama_Aset', 100);
+            $table->enum('status_aset', ['tersedia', 'dipinjam']);
+            $table->string('Row', 50)->nullable();
             $table->timestamps();
         });
     }

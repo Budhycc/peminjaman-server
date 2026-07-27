@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('log_aktivitas', function (Blueprint $table) {
             $table->id('id_log');
-            $table->foreignId('id_user')->constrained('users', 'id_user')->onDelete('cascade');
-            $table->string('aktivitas', 255);
+            $table->foreignId('id_pengguna')->constrained('users', 'id_pengguna')->onDelete('cascade');
+            $table->string('Aktivitas', 255);
             $table->dateTime('waktu');
-            $table->string('ip_address', 50)->nullable();
+            $table->string('deskripsi', 255)->nullable();
             $table->timestamps();
         });
     }

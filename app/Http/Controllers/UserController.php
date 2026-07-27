@@ -16,11 +16,11 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:100',
-            'username' => 'required|string|max:50|unique:users',
+            'nama_pengguna' => 'required|string|max:100',
+            'Username' => 'required|string|max:50|unique:users',
             'password' => 'required|string|min:6',
             'email' => 'required|string|email|max:100|unique:users',
-            'role' => 'in:admin,user'
+            'role' => 'required|in:admin,user'
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -40,10 +40,10 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'nama' => 'sometimes|string|max:100',
-            'username' => 'sometimes|string|max:50|unique:users,username,' . $user->id_user . ',id_user',
+            'nama_pengguna' => 'sometimes|string|max:100',
+            'Username' => 'sometimes|string|max:50|unique:users,Username,' . $user->id_pengguna . ',id_pengguna',
             'password' => 'sometimes|string|min:6',
-            'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id_user . ',id_user',
+            'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id_pengguna . ',id_pengguna',
             'role' => 'sometimes|in:admin,user'
         ]);
 

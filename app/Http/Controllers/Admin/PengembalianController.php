@@ -25,25 +25,25 @@ class PengembalianController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
+            'Id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
             'tanggal_kembali' => 'required|date',
-            'kondisi_kembali' => 'required|in:baik,rusak ringan,rusak berat',
+            'kondisi_Aset' => 'required|in:baik,rusak ringan,rusak berat',
             'catatan' => 'nullable|string'
         ]);
 
         $pengembalian = Pengembalian::create($validated);
 
         // Update Peminjaman status
-        $peminjaman = Peminjaman::find($validated['id_peminjaman']);
+        $peminjaman = Peminjaman::find($validated['Id_peminjaman']);
         if ($peminjaman) {
             $peminjaman->update(['status' => 'dikembalikan']);
             
             // Update Aset status and kondisi
-            $aset = Aset::find($peminjaman->id_aset);
+            $aset = Aset::find($peminjaman->Id_Aset);
             if ($aset) {
                 $aset->update([
                     'status' => 'tersedia',
-                    'kondisi' => $validated['kondisi_kembali']
+                    'kondisi' => $validated['kondisi_Aset']
                 ]);
             }
         }
@@ -69,21 +69,21 @@ class PengembalianController extends Controller
         $pengembalian = Pengembalian::findOrFail($id);
 
         $validated = $request->validate([
-            'id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
+            'Id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
             'tanggal_kembali' => 'required|date',
-            'kondisi_kembali' => 'required|in:baik,rusak ringan,rusak berat',
+            'kondisi_Aset' => 'required|in:baik,rusak ringan,rusak berat',
             'catatan' => 'nullable|string'
         ]);
 
         $pengembalian->update($validated);
 
         // Update Aset condition again based on this new update
-        $peminjaman = Peminjaman::find($validated['id_peminjaman']);
+        $peminjaman = Peminjaman::find($validated['Id_peminjaman']);
         if ($peminjaman) {
-            $aset = Aset::find($peminjaman->id_aset);
+            $aset = Aset::find($peminjaman->Id_Aset);
             if ($aset) {
                 $aset->update([
-                    'kondisi' => $validated['kondisi_kembali']
+                    'kondisi' => $validated['kondisi_Aset']
                 ]);
             }
         }
