@@ -317,6 +317,42 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **GET** `/api/loans/{id}` : Detail suatu spesifik peminjaman.
 - **GET** `/api/returns` : Menarik rekap riwayat barang apa saja yang sudah dikembalikan oleh user mana saja.
 
+#### 5. Cara Pinjam Barang Lewat QR Code
+
+Untuk melakukan peminjaman menggunakan QR Code, alurnya terdiri dari dua tahap.
+
+*(Catatan: Endpoint Scan QR Code ini bisa diakses oleh semua User).*
+
+Berikut adalah alur lengkap cara kerjanya (biasanya ini dilakukan secara berurutan oleh aplikasi Frontend/Mobile):
+
+**Tahap 1: Scan QR Code untuk Mendapatkan Data Aset**
+Ketika user memindai (scan) fisik QR Code yang tertempel di barang, aplikasi akan mendapatkan sebuah teks kode unik (contoh: `AST-1-XYZ123`).
+
+Kemudian, kirimkan teks tersebut ke endpoint Scan QR:
+
+- **Endpoint:** `POST /api/scan-qr`
+- **Body (JSON):**
+  ```json
+  {
+      "qr_code": "AST-1-XYZ123"
+  }
+  ```
+- **Respons (200 OK):** Sistem akan mengecek apakah QR Code tersebut asli. Jika valid, sistem akan membalas dengan seluruh detail aset terkait, termasuk statusnya apakah sedang tersedia atau tidak, dan yang paling penting: `Id_Aset`.
+
+**Tahap 2: Lakukan Pengajuan Peminjaman**
+Setelah aplikasi Anda mengetahui `Id_Aset` dari hasil scan di Tahap 1 (misal `Id_Aset` nya adalah 1), Anda langsung meneruskannya ke endpoint peminjaman seperti biasa:
+
+- **Endpoint:** `POST /api/loans`
+- **Body (JSON):**
+  ```json
+  {
+      "Id_Aset": 1,
+      "Tanggal_kembali": "2026-07-31 15:00:00"
+  }
+  ```
+
+**Kesimpulan Alurnya:** `Scan QR Fisik` ➔ `Kirim kode QR ke /api/scan-qr` ➔ `Dapat Id_Aset` ➔ `Kirim Id_Aset ke /api/loans` ➔ **Barang berhasil dipinjam!**
+
 ### 3.5. Log & Laporan (Khusus Admin)
 
 - **GET** `/api/logs` : Memantau jejak log aktivitas (action log user seperti meminjam barang dan mengembalikan barang, lengkap beserta tanggal dan waktu).
