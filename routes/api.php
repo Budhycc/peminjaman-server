@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/loans', [PeminjamanController::class, 'store']);
     Route::post('/returns', [PengembalianController::class, 'store']);
 
+    // QR Code Scanning (For all authenticated users)
+    Route::post('/scan-qr', [AsetController::class, 'scanQr']);
+
     // Admin Only Routes
     Route::middleware('admin')->group(function () {
         // User Management
@@ -39,10 +42,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/assets', [AsetController::class, 'store']);
         Route::put('/assets/{id}', [AsetController::class, 'update']);
         Route::delete('/assets/{id}', [AsetController::class, 'destroy']);
+        // QR Code generation
         Route::post('/assets/{id}/generate-qr', [AsetController::class, 'generateQr']);
-        
-        // QR Code
-        Route::post('/scan-qr', [AsetController::class, 'scanQr']);
 
         // Peminjaman Aset (Admin view)
         Route::get('/loans', [PeminjamanController::class, 'index']);

@@ -24,7 +24,7 @@ class PeminjamanController extends Controller
     public function myHistory(Request $request)
     {
         $userId = $request->user()->id_pengguna;
-        $peminjaman = Peminjaman::with('aset')->where('id_pengguna', $userId)->get();
+        $peminjaman = Peminjaman::with(['aset', 'pengembalian'])->where('id_pengguna', $userId)->get();
         return response()->json($peminjaman);
     }
 

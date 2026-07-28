@@ -52,7 +52,7 @@ Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header be
 4. Masukkan payload berikut (sesuaikan dengan data seeder Anda):
    ```json
    {
-       "username": "admin",
+       "Username": "admin",
        "password": "password"
    }
    ```
@@ -83,7 +83,7 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Request Body (JSON):**
   ```json
   {
-      "username": "admin",
+      "Username": "admin",
       "password": "password"
   }
   ```
@@ -127,6 +127,21 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 #### 1. Lihat Semua Pengguna
 - **Endpoint:** `GET /api/users`
 - **Response Success (200):** Menampilkan array JSON berisi list semua akun pengguna.
+  ```json
+  [
+      {
+          "id_pengguna": 1,
+          "nama_pengguna": "Admin",
+          "Username": "admin",
+          "email": "admin@mail.com",
+          "role": "admin",
+          "Unit_Kerja": "IT",
+          "Status_Akun": "aktif",
+          "created_at": "2026-07-28T10:00:00.000000Z",
+          "updated_at": "2026-07-28T10:00:00.000000Z"
+      }
+  ]
+  ```
 
 #### 2. Buat Pengguna Baru
 - **Endpoint:** `POST /api/users`
@@ -142,6 +157,20 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
       "Status_Akun": "aktif"
   }
   ```
+- **Response Success (201):**
+  ```json
+  {
+      "nama_pengguna": "Budi",
+      "Username": "budi",
+      "email": "budi@mail.com",
+      "role": "user",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif",
+      "id_pengguna": 2,
+      "created_at": "2026-07-28T10:00:00.000000Z",
+      "updated_at": "2026-07-28T10:00:00.000000Z"
+  }
+  ```
 
 #### 3. Detail, Update, dan Hapus Pengguna
 - **GET** `/api/users/{id}` : Melihat profil pengguna berdasarkan ID.
@@ -154,6 +183,27 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Endpoint:** `GET /api/assets`
 - **Akses:** Semua Role
 - **Deskripsi:** Mengembalikan daftar lengkap semua aset, termasuk status ketersediaan dan foto.
+- **Response Success (200):**
+  ```json
+  [
+      {
+          "id_Aset": 1,
+          "nama_Aset": "Proyektor EPSON",
+          "status_aset": "tersedia",
+          "Row": "A1",
+          "foto_aset": "images/proyektor.jpg",
+          "id_qr": 1,
+          "created_at": "2026-07-28T10:00:00.000000Z",
+          "updated_at": "2026-07-28T10:00:00.000000Z"
+      }
+  ]
+  ```
+
+> **Tips: Menampilkan Gambar (`foto_aset`) di Frontend**  
+> Hasil dari API hanya berupa path relatif (contoh: `"fotos/nama-file.jpg"`). Agar gambar bisa muncul di aplikasi Frontend (Web/Mobile), Anda perlu:
+> 1. Memastikan *storage link* sudah berjalan di server dengan mengetikkan: `php artisan storage:link` (cukup sekali saja).
+> 2. Menggabungkan URL dasar server dengan folder `/storage/` di depan hasil API.
+>    - **Contoh URL Lengkap**: `http://localhost:8000/storage/fotos/nama-file.jpg`
 
 #### 2. Lihat Aset Tersedia
 - **Endpoint:** `GET /api/assets/available`
@@ -164,6 +214,21 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Endpoint:** `GET /api/assets/{id}`
 - **Akses:** Semua Role
 - **Deskripsi:** Mengembalikan info satu aset spesifik beserta data relasi QR code nya.
+- **Response Success (200):**
+  ```json
+  {
+      "id_Aset": 1,
+      "nama_Aset": "Proyektor EPSON",
+      "status_aset": "tersedia",
+      "Row": "A1",
+      "foto_aset": "images/proyektor.jpg",
+      "id_qr": 1,
+      "qr_code": {
+          "id_qr": 1,
+          "kode_qr": "ASET-QR-AST-001-XYZ"
+      }
+  }
+  ```
 
 #### 4. Tambah Aset Baru (Admin)
 - **Endpoint:** `POST /api/assets`
@@ -192,10 +257,26 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Akses:** Semua Role
 - **Deskripsi:** Mencatat transaksi peminjaman. Sistem otomatis mengaitkannya dengan *user* yang sedang login (lewat token). Aset yang berhasil dipinjam akan dikunci statusnya menjadi `dipinjam`.
 - **Request Body (JSON):**
+  - `Id_Aset`: (Integer) Wajib. ID aset yang ingin dipinjam. (Gunakan huruf I besar pada kata Id).
+  - `Tanggal_kembali`: (Datetime) Wajib. Tanggal dan waktu rencana pengembalian (format `YYYY-MM-DD HH:MM:SS`), harus tanggal di masa depan.
+  - `catatan`: (String) Opsional.
   ```json
   {
-      "id_Aset": 1,
+      "Id_Aset": 1,
       "Tanggal_kembali": "2026-06-20 17:00:00"
+  }
+  ```
+- **Response Success (201):**
+  ```json
+  {
+      "id_peminjaman": 1,
+      "id_pengguna": 2,
+      "id_Aset": 1,
+      "Tanggal_peminjaman": "2026-06-18 10:00:00",
+      "Tanggal_kembali": "2026-06-20 17:00:00",
+      "Status": "dipinjam",
+      "created_at": "2026-06-18T10:00:00.000000Z",
+      "updated_at": "2026-06-18T10:00:00.000000Z"
   }
   ```
 
@@ -207,12 +288,27 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 #### 3. Pengembalian Aset
 - **Endpoint:** `POST /api/returns`
 - **Akses:** Semua Role
-- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Status `peminjaman` diubah jadi `dikembalikan` dan aset bisa diakses (menjadi `tersedia`) oleh orang lain lagi.
+- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Status `peminjaman` diubah jadi `dikembalikan` dan aset bisa diakses (menjadi `tersedia`) oleh orang lain lagi. Aktivitas ini juga akan direkam pada Log Aktivitas sistem.
 - **Request Body (JSON):**
+  - `Id_peminjaman`: (Integer) Wajib. Merupakan ID dari tabel transaksi peminjaman (Bukan ID Aset). Anda bisa mendapatkan ID ini dari riwayat peminjaman (`/api/loans/my-history`). Gunakan huruf 'I' kapital.
+  - `kondisi_Aset`: (String) Wajib. Hanya menerima 3 nilai (huruf kecil semua): `"baik"`, `"rusak ringan"`, atau `"rusak berat"`.
+  - `catatan`: (String) Opsional. Catatan tambahan (misalnya jika ada kerusakan).
   ```json
   {
+      "Id_peminjaman": 1,
+      "kondisi_Aset": "baik",
+      "catatan": "Kabel aman"
+  }
+  ```
+- **Response Success (201):**
+  ```json
+  {
+      "id_pengembalian": 1,
       "id_peminjaman": 1,
-      "kondisi_Aset": "baik"
+      "Tanggal_dikembalikan": "2026-06-20 16:30:00",
+      "kondisi_Aset": "baik",
+      "created_at": "2026-06-20T16:30:00.000000Z",
+      "updated_at": "2026-06-20T16:30:00.000000Z"
   }
   ```
 
@@ -236,7 +332,7 @@ Untuk memahami bagaimana aplikasi bekerja dari ujung ke ujung, Anda bisa menguji
 
 1. **Login User**: Panggil `POST /api/login` menggunakan kredensial yang ada (contoh: user dengan role "user"). Pasang token di Header `Authorization` untuk request selanjutnya.
 2. **Cek Aset Tersedia**: Panggil `GET /api/assets/available`. Pilih salah satu ID aset (misal: `Id_Aset: 1`).
-3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `id_Aset: 1` di dalam body. Status aset sekarang otomatis menjadi *dipinjam*.
+3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `Id_Aset: 1` di dalam body (Pastikan 'I' kapital). Status aset sekarang otomatis menjadi *dipinjam*.
 4. **Cek Riwayat Sendiri**: Panggil `GET /api/loans/my-history` untuk memastikan transaksi peminjaman tercatat untuk Anda. Catat ID peminjaman (misal: `id_peminjaman: 1`).
-5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `id_peminjaman: 1` ke dalam body beserta kondisi saat dikembalikan.
+5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `Id_peminjaman: 1` ke dalam body (Pastikan 'I' kapital) beserta kondisi aset (`baik`/`rusak ringan`/`rusak berat`).
 6. **Cek Aktivitas (Hanya Admin)**: Panggil `GET /api/logs` menggunakan akun **Admin** untuk memverifikasi bahwa sistem merekam waktu saat user meminjam dan mengembalikan aset.

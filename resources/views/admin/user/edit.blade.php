@@ -38,6 +38,11 @@
         </div>
 
         <div class="form-group">
+            <label for="Unit_Kerja">Unit Kerja</label>
+            <input type="text" name="Unit_Kerja" id="Unit_Kerja" class="form-control" value="{{ old('Unit_Kerja', $user->Unit_Kerja) }}">
+        </div>
+
+        <div class="form-group">
             <label for="password">Password (Biarkan kosong jika tidak ingin mengubah)</label>
             <input type="password" name="password" id="password" class="form-control" minlength="6">
         </div>

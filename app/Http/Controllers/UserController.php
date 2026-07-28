@@ -20,7 +20,8 @@ class UserController extends Controller
             'Username' => 'required|string|max:50|unique:users',
             'password' => 'required|string|min:6',
             'email' => 'required|string|email|max:100|unique:users',
-            'role' => 'required|in:admin,user'
+            'role' => 'required|in:admin,user',
+            'Unit_Kerja' => 'nullable|string|max:100',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -44,7 +45,8 @@ class UserController extends Controller
             'Username' => 'sometimes|string|max:50|unique:users,Username,' . $user->id_pengguna . ',id_pengguna',
             'password' => 'sometimes|string|min:6',
             'email' => 'sometimes|string|email|max:100|unique:users,email,' . $user->id_pengguna . ',id_pengguna',
-            'role' => 'sometimes|in:admin,user'
+            'role' => 'sometimes|in:admin,user',
+            'Unit_Kerja' => 'nullable|string|max:100',
         ]);
 
         if (isset($validated['password'])) {

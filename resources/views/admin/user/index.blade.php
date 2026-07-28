@@ -21,6 +21,7 @@
                     <th>Nama</th>
                     <th>Username</th>
                     <th>Email</th>
+                    <th>Unit Kerja</th>
                     <th>Role</th>
                     <th>Aksi</th>
                 </tr>
@@ -32,6 +33,7 @@
                     <td>{{ $user->nama_pengguna }}</td>
                     <td>{{ $user->Username }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->Unit_Kerja ?: '-' }}</td>
                     <td>
                         @if($user->role == 'admin')
                             <span class="status-badge pending" style="background-color: rgba(79, 70, 229, 0.1); color: var(--primary-color);">Admin</span>
