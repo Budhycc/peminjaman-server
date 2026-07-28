@@ -1,58 +1,338 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Dokumentasi API Sistem Peminjaman Aset Server
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Dokumentasi ini berisi detail spesifikasi API, cara instalasi, serta panduan lengkap cara menguji (testing) API menggunakan Postman.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 1. Persiapan Server & Instalasi Lokal
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Jika Anda baru melakukan *clone* proyek ini, ikuti langkah-langkah berikut untuk menjalankannya:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. Copy file `.env.example` menjadi `.env`.
+   ```bash
+   cp .env.example .env
+   ```
+2. Instal dependensi PHP menggunakan Composer.
+   ```bash
+   composer install
+   ```
+3. Generate application key.
+   ```bash
+   php artisan key:generate
+   ```
+4. Konfigurasi database di file `.env` (secara default menggunakan SQLite).
+5. Jalankan migrasi dan *seeder* untuk membuat struktur database dan data *dummy* pengguna.
+   ```bash
+   php artisan migrate --seed
+   ```
+6. Jalankan server lokal Laravel.
+   ```bash
+   php artisan serve
+   ```
+   *(Secara default, API dapat diakses melalui `http://localhost:8000/api`)*
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 2. Cara Pakai (Panduan Menggunakan Postman)
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+API ini dilindungi oleh **Laravel Sanctum**. Setiap permintaan *endpoint* (kecuali untuk jalur login) harus menyertakan **Bearer Token** pada *Header*. 
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Sistem ini menerapkan **Role-Based Access Control (RBAC)** dengan dua peran utama:
+- **User:** Hanya dapat melihat daftar aset tersedia, melihat detail aset, melakukan peminjaman, mengembalikan aset, dan melihat riwayat peminjamannya sendiri.
+- **Admin:** Memiliki kontrol penuh untuk mengatur pengguna, mengelola data aset, melihat seluruh transaksi peminjaman/pengembalian, serta mengakses log dan laporan.
 
-## Agentic Development
+### A. Pengaturan Global (Headers)
+Untuk memastikan Laravel merespons dengan format JSON, selalu sertakan header berikut pada setiap *request* Postman:
+- `Accept` : `application/json`
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### B. Mendapatkan Bearer Token (Proses Login)
+1. Buat *request* baru di Postman.
+2. Atur metode menjadi **POST** dan masukkan URL: `http://localhost:8000/api/login`.
+3. Buka tab **Body**, pilih **raw**, lalu pilih tipe **JSON**.
+4. Masukkan payload berikut (sesuaikan dengan data seeder Anda):
+   ```json
+   {
+       "Username": "admin",
+       "password": "password"
+   }
+   ```
+5. Klik **Send**. Respons akan mengembalikan `access_token` (contoh: `1|abcde...`). **Copy token ini**.
 
-```bash
-composer require laravel/boost --dev
+### C. Menerapkan Token untuk Request Lain
+1. Buka *request* baru untuk endpoint lain (misalnya lihat daftar aset).
+2. Pindah ke tab **Authorization** di Postman.
+3. Pilih tipe **Bearer Token**.
+4. *Paste* token yang disalin pada kolom **Token**.
 
-php artisan boost:install
-```
+*(Tips Postman: Anda bisa menggunakan fitur "Tests" pada endpoint login untuk menyimpan token secara otomatis ke variabel environment Postman).*
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 3. Detail Endpoint API
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Semua endpoint kecuali `/api/login` wajib menyertakan **Bearer Token** pada *Header Authorization*:
+`Authorization: Bearer <token_anda>`
+Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 
-## Code of Conduct
+### 3.1. Autentikasi (`Auth`)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### 1. Login
+- **Endpoint:** `POST /api/login`
+- **Akses:** Publik
+- **Deskripsi:** Mendapatkan bearer token untuk mengakses endpoint lainnya.
+- **Request Body (JSON):**
+  ```json
+  {
+      "Username": "admin",
+      "password": "password"
+  }
+  ```
+- **Response Success (200):**
+  ```json
+  {
+      "access_token": "1|abcde...",
+      "token_type": "Bearer"
+  }
+  ```
 
-## Security Vulnerabilities
+#### 2. Logout
+- **Endpoint:** `POST /api/logout`
+- **Akses:** Semua Role (Membutuhkan Token)
+- **Deskripsi:** Menghapus token yang sedang digunakan.
+- **Response Success (200):**
+  ```json
+  {
+      "message": "Logged out"
+  }
+  ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### 3. Profil Pengguna
+- **Endpoint:** `GET /api/profile`
+- **Akses:** Semua Role (Membutuhkan Token)
+- **Deskripsi:** Menampilkan data pengguna yang sedang login.
+- **Response Success (200):**
+  ```json
+  {
+      "id_pengguna": 1,
+      "nama_pengguna": "Admin",
+      "Username": "admin",
+      "role": "admin",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif"
+  }
+  ```
 
-## License
+### 3.2. Manajemen Pengguna (`Users`) - Khusus Admin
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### 1. Lihat Semua Pengguna
+- **Endpoint:** `GET /api/users`
+- **Response Success (200):** Menampilkan array JSON berisi list semua akun pengguna.
+  ```json
+  [
+      {
+          "id_pengguna": 1,
+          "nama_pengguna": "Admin",
+          "Username": "admin",
+          "email": "admin@mail.com",
+          "role": "admin",
+          "Unit_Kerja": "IT",
+          "Status_Akun": "aktif",
+          "created_at": "2026-07-28T10:00:00.000000Z",
+          "updated_at": "2026-07-28T10:00:00.000000Z"
+      }
+  ]
+  ```
+
+#### 2. Buat Pengguna Baru
+- **Endpoint:** `POST /api/users`
+- **Request Body (JSON):**
+  ```json
+  {
+      "nama_pengguna": "Budi",
+      "Username": "budi",
+      "password": "123",
+      "email": "budi@mail.com",
+      "role": "user",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif"
+  }
+  ```
+- **Response Success (201):**
+  ```json
+  {
+      "nama_pengguna": "Budi",
+      "Username": "budi",
+      "email": "budi@mail.com",
+      "role": "user",
+      "Unit_Kerja": "IT",
+      "Status_Akun": "aktif",
+      "id_pengguna": 2,
+      "created_at": "2026-07-28T10:00:00.000000Z",
+      "updated_at": "2026-07-28T10:00:00.000000Z"
+  }
+  ```
+
+#### 3. Detail, Update, dan Hapus Pengguna
+- **GET** `/api/users/{id}` : Melihat profil pengguna berdasarkan ID.
+- **PUT** `/api/users/{id}` : Memperbarui data pengguna. Parameter body sama persis seperti saat Create (password boleh tidak dikirim jika tidak ingin diubah).
+- **DELETE** `/api/users/{id}` : Menghapus data pengguna tersebut dari sistem.
+
+### 3.3. Manajemen Aset (`Assets`)
+
+#### 1. Lihat Semua Aset
+- **Endpoint:** `GET /api/assets`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan daftar lengkap semua aset, termasuk status ketersediaan dan foto.
+- **Response Success (200):**
+  ```json
+  [
+      {
+          "id_Aset": 1,
+          "nama_Aset": "Proyektor EPSON",
+          "status_aset": "tersedia",
+          "Row": "A1",
+          "foto_aset": "images/proyektor.jpg",
+          "id_qr": 1,
+          "created_at": "2026-07-28T10:00:00.000000Z",
+          "updated_at": "2026-07-28T10:00:00.000000Z"
+      }
+  ]
+  ```
+
+> **Tips: Menampilkan Gambar (`foto_aset`) di Frontend**  
+> Hasil dari API hanya berupa path relatif (contoh: `"fotos/nama-file.jpg"`). Agar gambar bisa muncul di aplikasi Frontend (Web/Mobile), Anda perlu:
+> 1. Memastikan *storage link* sudah berjalan di server dengan mengetikkan: `php artisan storage:link` (cukup sekali saja).
+> 2. Menggabungkan URL dasar server dengan folder `/storage/` di depan hasil API.
+>    - **Contoh URL Lengkap**: `http://localhost:8000/storage/fotos/nama-file.jpg`
+
+#### 2. Lihat Aset Tersedia
+- **Endpoint:** `GET /api/assets/available`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan daftar aset yang hanya dalam status `tersedia`.
+
+#### 3. Detail Aset
+- **Endpoint:** `GET /api/assets/{id}`
+- **Akses:** Semua Role
+- **Deskripsi:** Mengembalikan info satu aset spesifik beserta data relasi QR code nya.
+- **Response Success (200):**
+  ```json
+  {
+      "id_Aset": 1,
+      "nama_Aset": "Proyektor EPSON",
+      "status_aset": "tersedia",
+      "Row": "A1",
+      "foto_aset": "images/proyektor.jpg",
+      "id_qr": 1,
+      "qr_code": {
+          "id_qr": 1,
+          "kode_qr": "ASET-QR-AST-001-XYZ"
+      }
+  }
+  ```
+
+#### 4. Tambah Aset Baru (Admin)
+- **Endpoint:** `POST /api/assets`
+- **Deskripsi:** Memasukkan aset ke dalam sistem. QR Code unik akan di-_generate_ secara otomatis.
+- **Request Body (FormData / `multipart/form-data`):**
+  - `nama_Aset`: (String) Wajib, contoh: Proyektor
+  - `status_aset`: (String) Wajib, contoh: tersedia
+  - `Row`: (String) Wajib, contoh: A1
+  - `foto_aset`: (File Gambar, Opsional) Format jpeg/png/jpg/webp, max 2MB.
+
+#### 5. Update & Hapus Aset (Admin)
+- **PUT** `/api/assets/{id}` : Mengubah informasi aset yang ada. <br>*Tips Postman:* Jika ingin mengubah/mengirim `foto_aset` ke endpoint ini, harap gunakan metode HTTP **POST** dan selipkan key `_method` dengan value `PUT` di tab form-data.
+- **DELETE** `/api/assets/{id}` : Menghapus keseluruhan data aset secara permanen.
+
+#### 6. Monitoring & QR Code (Admin)
+- **GET** `/api/assets/status` : Data statistik (rekap) jumlah aset tersedia versus dipinjam.
+- **GET** `/api/assets/borrowed` : List aset spesifik yang saat ini sedang dipinjam oleh user lain.
+- **POST** `/api/assets/{id}/generate-qr` : Mengubah (reset) ulang QR Code untuk suatu aset (secara default tidak perlu karena QR code sudah terbuat otomatis di awal penambahan aset).
+- **POST** `/api/scan-qr` : Mengecek keaslian QR Code aset.
+  - **Request Body (JSON):** `{ "qr_code": "ASET-QR-AST-001-xxx" }`
+
+### 3.4. Peminjaman & Pengembalian (`Loans` & `Returns`)
+
+#### 1. Pengajuan Peminjaman
+- **Endpoint:** `POST /api/loans`
+- **Akses:** Semua Role
+- **Deskripsi:** Mencatat transaksi peminjaman. Sistem otomatis mengaitkannya dengan *user* yang sedang login (lewat token). Aset yang berhasil dipinjam akan dikunci statusnya menjadi `dipinjam`.
+- **Request Body (JSON):**
+  - `Id_Aset`: (Integer) Wajib. ID aset yang ingin dipinjam. (Gunakan huruf I besar pada kata Id).
+  - `Tanggal_kembali`: (Datetime) Wajib. Tanggal dan waktu rencana pengembalian (format `YYYY-MM-DD HH:MM:SS`), harus tanggal di masa depan.
+  - `catatan`: (String) Opsional.
+  ```json
+  {
+      "Id_Aset": 1,
+      "Tanggal_kembali": "2026-06-20 17:00:00"
+  }
+  ```
+- **Response Success (201):**
+  ```json
+  {
+      "id_peminjaman": 1,
+      "id_pengguna": 2,
+      "id_Aset": 1,
+      "Tanggal_peminjaman": "2026-06-18 10:00:00",
+      "Tanggal_kembali": "2026-06-20 17:00:00",
+      "Status": "dipinjam",
+      "created_at": "2026-06-18T10:00:00.000000Z",
+      "updated_at": "2026-06-18T10:00:00.000000Z"
+  }
+  ```
+
+#### 2. Riwayat Peminjaman Sendiri
+- **Endpoint:** `GET /api/loans/my-history`
+- **Akses:** Semua Role
+- **Deskripsi:** Menampilkan catatan semua transaksi peminjaman yang pernah dilakukan oleh akun pengguna Anda (yg sedang login).
+
+#### 3. Pengembalian Aset
+- **Endpoint:** `POST /api/returns`
+- **Akses:** Semua Role
+- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Status `peminjaman` diubah jadi `dikembalikan` dan aset bisa diakses (menjadi `tersedia`) oleh orang lain lagi. Aktivitas ini juga akan direkam pada Log Aktivitas sistem.
+- **Request Body (JSON):**
+  - `Id_peminjaman`: (Integer) Wajib. Merupakan ID dari tabel transaksi peminjaman (Bukan ID Aset). Anda bisa mendapatkan ID ini dari riwayat peminjaman (`/api/loans/my-history`). Gunakan huruf 'I' kapital.
+  - `kondisi_Aset`: (String) Wajib. Hanya menerima 3 nilai (huruf kecil semua): `"baik"`, `"rusak ringan"`, atau `"rusak berat"`.
+  - `catatan`: (String) Opsional. Catatan tambahan (misalnya jika ada kerusakan).
+  ```json
+  {
+      "Id_peminjaman": 1,
+      "kondisi_Aset": "baik",
+      "catatan": "Kabel aman"
+  }
+  ```
+- **Response Success (201):**
+  ```json
+  {
+      "id_pengembalian": 1,
+      "id_peminjaman": 1,
+      "Tanggal_dikembalikan": "2026-06-20 16:30:00",
+      "kondisi_Aset": "baik",
+      "created_at": "2026-06-20T16:30:00.000000Z",
+      "updated_at": "2026-06-20T16:30:00.000000Z"
+  }
+  ```
+
+#### 4. Khusus Admin (Monitoring Peminjaman & Pengembalian)
+- **GET** `/api/loans` : Menarik rekap semua transaksi peminjaman dari semua user di sistem.
+- **GET** `/api/loans/{id}` : Detail suatu spesifik peminjaman.
+- **GET** `/api/returns` : Menarik rekap riwayat barang apa saja yang sudah dikembalikan oleh user mana saja.
+
+### 3.5. Log & Laporan (Khusus Admin)
+
+- **GET** `/api/logs` : Memantau jejak log aktivitas (action log user seperti meminjam barang dan mengembalikan barang, lengkap beserta tanggal dan waktu).
+- **GET** `/api/reports/inventory` : Endpoint laporan khusus status akhir dan posisi seluruh aset (inventaris).
+- **GET** `/api/reports/loans` : Endpoint laporan khusus untuk semua pencatatan peminjaman.
+- **GET** `/api/reports/returns` : Endpoint laporan khusus rekap data pengembalian.
+
+---
+
+## 4. Simulasi Alur Kerja (Skenario Penggunaan)
+
+Untuk memahami bagaimana aplikasi bekerja dari ujung ke ujung, Anda bisa menguji alur (flow) ini di Postman secara berurutan:
+
+1. **Login User**: Panggil `POST /api/login` menggunakan kredensial yang ada (contoh: user dengan role "user"). Pasang token di Header `Authorization` untuk request selanjutnya.
+2. **Cek Aset Tersedia**: Panggil `GET /api/assets/available`. Pilih salah satu ID aset (misal: `Id_Aset: 1`).
+3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `Id_Aset: 1` di dalam body (Pastikan 'I' kapital). Status aset sekarang otomatis menjadi *dipinjam*.
+4. **Cek Riwayat Sendiri**: Panggil `GET /api/loans/my-history` untuk memastikan transaksi peminjaman tercatat untuk Anda. Catat ID peminjaman (misal: `id_peminjaman: 1`).
+5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `Id_peminjaman: 1` ke dalam body (Pastikan 'I' kapital) beserta kondisi aset (`baik`/`rusak ringan`/`rusak berat`).
+6. **Cek Aktivitas (Hanya Admin)**: Panggil `GET /api/logs` menggunakan akun **Admin** untuk memverifikasi bahwa sistem merekam waktu saat user meminjam dan mengembalikan aset.
