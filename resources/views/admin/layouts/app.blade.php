@@ -60,7 +60,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-icon"><i class="fas fa-box-open"></i></div>
-                <h2 class="logo-text">SimPinjam</h2>
+                <h2 class="logo-text">Peminjaman</h2>
                 <div class="toggle-btn" id="toggle-btn"><i class="fas fa-bars"></i></div>
             </div>
             <ul class="sidebar-menu">
@@ -89,15 +89,9 @@
         <main class="main-content">
             <!-- Header -->
             <header class="top-header">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Cari sesuatu...">
-                </div>
+                <!-- Search bar hidden per request -->
                 <div class="header-actions">
-                    <div class="notification-bell">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">0</span>
-                    </div>
+                    <!-- Notification bell hidden per request -->
                     <div class="user-profile">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->nama_pengguna ?? 'Admin') }}&background=0D8ABC&color=fff" alt="Admin Profile">
                         <span class="user-name">{{ auth()->user()->nama_pengguna ?? 'Admin' }}</span>
