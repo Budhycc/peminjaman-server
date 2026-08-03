@@ -372,3 +372,22 @@ Untuk memahami bagaimana aplikasi bekerja dari ujung ke ujung, Anda bisa menguji
 4. **Cek Riwayat Sendiri**: Panggil `GET /api/loans/my-history` untuk memastikan transaksi peminjaman tercatat untuk Anda. Catat ID peminjaman (misal: `id_peminjaman: 1`).
 5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `Id_peminjaman: 1` ke dalam body (Pastikan 'I' kapital) beserta kondisi aset (`baik`/`rusak ringan`/`rusak berat`).
 6. **Cek Aktivitas (Hanya Admin)**: Panggil `GET /api/logs` menggunakan akun **Admin** untuk memverifikasi bahwa sistem merekam waktu saat user meminjam dan mengembalikan aset.
+
+---
+
+## 5. Web Admin Dashboard
+
+Selain melalui API, sistem ini juga menyediakan **Web Admin Dashboard** yang terintegrasi (khusus untuk pengguna dengan role admin). Dashboard ini memudahkan pengelolaan sistem secara visual melalui antarmuka website, tanpa harus selalu menggunakan API atau Postman.
+
+### Fitur Utama di Admin Dashboard:
+- **Dashboard Overview:** Menampilkan ringkasan dan statistik jumlah user, total aset, peminjaman aktif, aset tersedia, beserta grafik jumlah peminjaman bulanan.
+- **Manajemen User:** Menambah, mengubah, melihat detail, dan menghapus akun pengguna (admin/user).
+- **Manajemen Aset:** Mengelola data aset termasuk unggah foto, penempatan baris (row), dan mengubah status ketersediaan.
+- **Transaksi Peminjaman & Pengembalian:** Memantau seluruh aktivitas peminjaman secara langsung dan mencatat data pengembalian aset.
+- **Laporan (Reports):** Menampilkan rekapitulasi data riwayat peminjaman beserta detail pengembalian aset yang dilengkapi dengan fitur **Filter Berdasarkan Tanggal** dan kemampuan untuk **Cetak Laporan** ke format print/PDF.
+
+### Cara Mengakses Dashboard
+1. Pastikan server lokal sudah berjalan melalui perintah `php artisan serve`.
+2. Buka web browser Anda dan akses alamat: `http://localhost:8000/login` (atau URL root `http://localhost:8000`).
+3. Masuk menggunakan akun yang memiliki hak akses sebagai Admin (contoh default: username `admin` dan password `admin123`).
+4. Setelah berhasil login, Anda akan langsung diarahkan ke halaman utama Dashboard Peminjaman (`/admin/dashboard`).
