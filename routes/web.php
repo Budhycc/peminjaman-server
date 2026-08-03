@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AsetController;
 use App\Http\Controllers\Admin\PeminjamanController;
 use App\Http\Controllers\Admin\PengembalianController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\WebAuthController;
 
 Route::get('/', function () {
@@ -53,8 +54,6 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/returns/{id}/edit', [PengembalianController::class, 'edit'])->name('admin.returns.edit');
     Route::put('/returns/{id}', [PengembalianController::class, 'update'])->name('admin.returns.update');
     Route::delete('/returns/{id}', [PengembalianController::class, 'destroy'])->name('admin.returns.destroy');
-    // Reports can be added later
-    Route::get('/reports', function() {
-        return view('admin.layouts.app'); // temporary placeholder
-    });
+    // Reports
+    Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
 });
