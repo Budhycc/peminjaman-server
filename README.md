@@ -190,9 +190,10 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
           "id_Aset": 1,
           "nama_Aset": "Proyektor EPSON",
           "status_aset": "tersedia",
-          "Row": "A1",
+          "jumlah": 10,
+          "jenis_barang": "Elektronik",
+          "tempat_barang": "Ruang Server",
           "foto_aset": "images/proyektor.jpg",
-          "id_qr": 1,
           "created_at": "2026-07-28T10:00:00.000000Z",
           "updated_at": "2026-07-28T10:00:00.000000Z"
       }
@@ -220,12 +221,13 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
       "id_Aset": 1,
       "nama_Aset": "Proyektor EPSON",
       "status_aset": "tersedia",
-      "Row": "A1",
+      "jumlah": 10,
+      "jenis_barang": "Elektronik",
+      "tempat_barang": "Ruang Server",
       "foto_aset": "images/proyektor.jpg",
-      "id_qr": 1,
       "qr_code": {
           "id_qr": 1,
-          "kode_qr": "ASET-QR-AST-001-XYZ"
+          "kode_unik": "AST-1-XYZ123"
       }
   }
   ```
@@ -236,7 +238,9 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Request Body (FormData / `multipart/form-data`):**
   - `nama_Aset`: (String) Wajib, contoh: Proyektor
   - `status_aset`: (String) Wajib, contoh: tersedia
-  - `Row`: (String) Wajib, contoh: A1
+  - `jumlah`: (Number) Wajib, contoh: 5
+  - `jenis_barang`: (String) Wajib, contoh: Elektronik
+  - `tempat_barang`: (String) Opsional, contoh: Ruang Server
   - `foto_aset`: (File Gambar, Opsional) Format jpeg/png/jpg/webp, max 2MB.
 
 #### 5. Update & Hapus Aset (Admin)
@@ -291,7 +295,7 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 - **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Pengembalian akan masuk dengan status **pending**. Admin harus memverifikasi dan menyetujuinya di Dashboard agar aset tersebut kembali menjadi `tersedia` (bisa dipinjam oleh orang lain). Aktivitas ini juga akan direkam pada Log Aktivitas sistem.
 - **Request Body (JSON):**
   - `Id_peminjaman`: (Integer) Wajib. Merupakan ID dari tabel transaksi peminjaman (Bukan ID Aset). Anda bisa mendapatkan ID ini dari riwayat peminjaman (`/api/loans/my-history`). Gunakan huruf 'I' kapital.
-  - `kondisi_Aset`: (String) Wajib. Hanya menerima 3 nilai (huruf kecil semua): `"baik"`, `"rusak ringan"`, atau `"rusak berat"`.
+  - `kondisi_Aset`: (String) Wajib. Hanya menerima 2 nilai (huruf kecil semua): `"baik"` atau `"rusak"`.
   - `catatan`: (String) Opsional. Catatan tambahan (misalnya jika ada kerusakan).
   ```json
   {
@@ -371,7 +375,7 @@ Untuk memahami bagaimana aplikasi bekerja dari ujung ke ujung, Anda bisa menguji
 2. **Cek Aset Tersedia**: Panggil `GET /api/assets/available`. Pilih salah satu ID aset (misal: `Id_Aset: 1`).
 3. **Pinjam Aset**: Panggil `POST /api/loans` dan masukkan `Id_Aset: 1` di dalam body (Pastikan 'I' kapital). Status aset sekarang otomatis menjadi *dipinjam*.
 4. **Cek Riwayat Sendiri**: Panggil `GET /api/loans/my-history` untuk memastikan transaksi peminjaman tercatat untuk Anda. Catat ID peminjaman (misal: `id_peminjaman: 1`).
-5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `Id_peminjaman: 1` ke dalam body (Pastikan 'I' kapital) beserta kondisi aset (`baik`/`rusak ringan`/`rusak berat`).
+5. **Kembalikan Aset**: Panggil `POST /api/returns` dan masukkan `Id_peminjaman: 1` ke dalam body (Pastikan 'I' kapital) beserta kondisi aset (`baik` atau `rusak`).
 6. **Cek Aktivitas (Hanya Admin)**: Panggil `GET /api/logs` menggunakan akun **Admin** untuk memverifikasi bahwa sistem merekam waktu saat user meminjam dan mengembalikan aset.
 
 ---
