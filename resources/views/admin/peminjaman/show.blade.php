@@ -33,7 +33,7 @@
 
     <div style="margin-bottom: 20px;">
         <strong>Status:</strong> 
-        @if(!$peminjaman->pengembalian)
+        @if($peminjaman->sisa_pinjaman > 0)
             <span class="status-badge active">Dipinjam</span>
         @else
             <span class="status-badge completed">Dikembalikan</span>

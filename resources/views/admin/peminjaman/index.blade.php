@@ -37,7 +37,7 @@
                     <td>{{ \Carbon\Carbon::parse($item->Tanggal_pinjam)->format('d M Y H:i') }}</td>
                     <td>{{ $item->lama_pinjam }}</td>
                     <td>
-                        @if(!$item->pengembalian)
+                        @if($item->sisa_pinjaman > 0)
                             <span class="status-badge active">Dipinjam</span>
                         @else
                             <span class="status-badge completed">Dikembalikan</span>
@@ -46,7 +46,7 @@
                     <td style="white-space: nowrap;">
                         <a href="{{ route('admin.loans.show', $item->Id_peminjaman) }}" class="action-btn view" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Detail"><i class="fas fa-eye"></i></a>
                         <a href="{{ route('admin.loans.edit', $item->Id_peminjaman) }}" class="action-btn approve" style="background-color: rgba(245, 158, 11, 0.1); color: var(--warning); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Edit"><i class="fas fa-edit"></i></a>
-                        @if(!$item->pengembalian)
+                        @if($item->sisa_pinjaman > 0)
                             <a href="{{ route('admin.returns.create', ['peminjaman_id' => $item->Id_peminjaman]) }}" class="action-btn approve" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success); display: inline-flex; align-items: center; justify-content: center; text-decoration: none;" title="Kembalikan Aset"><i class="fas fa-undo"></i></a>
                         @endif
                         <form action="{{ route('admin.loans.destroy', $item->Id_peminjaman) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus peminjaman ini?');">

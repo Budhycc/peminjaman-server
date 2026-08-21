@@ -149,14 +149,14 @@
                     <td>{{ $item->aset->nama_Aset ?? 'Unknown' }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->Tanggal_pinjam)->format('d M Y') }}</td>
                     <td>
-                        @if($item->pengembalian)
-                            {{ \Carbon\Carbon::parse($item->pengembalian->tanggal_dikembalikan)->format('d M Y') }}
+                        @if($item->pengembalian->count() > 0)
+                            {{ \Carbon\Carbon::parse($item->pengembalian->sortByDesc('tanggal_kembali')->first()->tanggal_kembali)->format('d M Y') }}
                         @else
                             -
                         @endif
                     </td>
                     <td>
-                        @if(!$item->pengembalian)
+                        @if($item->sisa_pinjaman > 0)
                             <span class="status-badge active">Dipinjam</span>
                         @else
                             <span class="status-badge completed">Dikembalikan</span>

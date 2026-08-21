@@ -17,9 +17,11 @@ class DashboardController extends Controller
         
         $totalAset = Aset::sum('jumlah');
         $totalDipinjam = Peminjaman::sum('jumlah');
-        $totalDikembalikan = Pengembalian::sum('jumlah');
         
-        $peminjamanAktif = $totalDipinjam - $totalDikembalikan;
+        // Use sisa_pinjaman accessor to correctly calculate active loans
+        $peminjamanAktif = Peminjaman::get()->sum('sisa_pinjaman');
+        $totalDikembalikan = $totalDipinjam - $peminjamanAktif;
+        
         $asetTersedia = $totalAset - $peminjamanAktif;
         
         $dikembalikanBulanIni = Pengembalian::whereMonth('tanggal_kembali', Carbon::now()->month)

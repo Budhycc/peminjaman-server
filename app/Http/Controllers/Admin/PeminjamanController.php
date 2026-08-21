@@ -86,12 +86,12 @@ class PeminjamanController extends Controller
         $newAset = Aset::find($validated['Id_Aset']);
         if ($newAset) {
             $available = $newAset->jumlah_tersedia;
-            // If it's the same aset and status is still dipinjam, we must add back the old amount before checking
-            if ($peminjaman->Id_Aset == $validated['Id_Aset'] && !$peminjaman->pengembalian) {
-                $available += $peminjaman->jumlah;
+            // If it's the same aset and it's not fully returned yet, add back the remaining amount before checking
+            if ($peminjaman->Id_Aset == $validated['Id_Aset'] && $peminjaman->sisa_pinjaman > 0) {
+                $available += $peminjaman->sisa_pinjaman;
             }
             
-            if (!$peminjaman->pengembalian && $validated['jumlah'] > $available) {
+            if ($peminjaman->sisa_pinjaman > 0 && $validated['jumlah'] > $available) {
                 return back()->withErrors(['jumlah' => 'Jumlah aset yang tersedia tidak mencukupi. Tersedia: ' . $available])->withInput();
             }
         }
@@ -126,14 +126,15 @@ class PeminjamanController extends Controller
     {
         $peminjaman = Peminjaman::findOrFail($id);
         
-        if (!$peminjaman->pengembalian) {
+        if ($peminjaman->sisa_pinjaman > 0) {
             $aset = Aset::find($peminjaman->Id_Aset);
             // Since it's deleted, effectively returned, recheck availability
-            if ($aset && ($aset->jumlah_tersedia + $peminjaman->jumlah) > 0) {
+            if ($aset && ($aset->jumlah_tersedia + $peminjaman->sisa_pinjaman) > 0) {
                 $aset->update(['status_aset' => 'tersedia']);
             }
         }
 
+        $peminjaman->pengembalian()->delete();
         $peminjaman->delete();
 
         return redirect()->route('admin.loans.index')->with('success', 'Peminjaman berhasil dihapus.');

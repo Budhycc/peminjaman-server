@@ -26,8 +26,7 @@ class PengembalianController extends Controller
 
         $peminjaman = Peminjaman::with('aset')->findOrFail($validated['Id_peminjaman']);
 
-        $totalDikembalikan = Pengembalian::where('id_peminjaman', $validated['Id_peminjaman'])->sum('jumlah');
-        $sisaPinjaman = $peminjaman->jumlah - $totalDikembalikan;
+        $sisaPinjaman = $peminjaman->sisa_pinjaman;
 
         if ($validated['jumlah'] > $sisaPinjaman) {
             return response()->json(['message' => 'Jumlah pengembalian melebihi sisa pinjaman. Sisa yang harus dikembalikan: ' . $sisaPinjaman], 400);
@@ -39,7 +38,7 @@ class PengembalianController extends Controller
                 'id_peminjaman' => $peminjaman->Id_peminjaman,
                 'jumlah' => $validated['jumlah'],
                 'tanggal_kembali' => now(),
-                'kondisi_Aset' => $validated['kondisi_Aset']
+                'kondisi_Aset' => $validated['kondisi_Aset'] === 'rusak' ? 'rusak berat' : 'baik'
             ]);
 
             // Aset availability is calculated dynamically, no need to update status_aset here.

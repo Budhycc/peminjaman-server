@@ -19,10 +19,7 @@ class PengembalianController extends Controller
     public function create(Request $request)
     {
         $peminjamans = Peminjaman::with(['user', 'aset'])->get()->filter(function ($p) {
-            $dikembalikan = \App\Models\Pengembalian::where('id_peminjaman', $p->Id_peminjaman)
-                ->where('status_pengembalian', '!=', 'ditolak')
-                ->sum('jumlah');
-            return $p->jumlah > $dikembalikan;
+            return $p->sisa_pinjaman > 0;
         });
         
         $selectedPeminjamanId = $request->query('peminjaman_id');
@@ -41,10 +38,7 @@ class PengembalianController extends Controller
         ]);
 
         $peminjaman = Peminjaman::find($validated['Id_peminjaman']);
-        $totalDikembalikan = \App\Models\Pengembalian::where('id_peminjaman', $validated['Id_peminjaman'])
-            ->where('status_pengembalian', '!=', 'ditolak')
-            ->sum('jumlah');
-        $sisaPinjaman = $peminjaman ? ($peminjaman->jumlah - $totalDikembalikan) : 0;
+        $sisaPinjaman = $peminjaman ? $peminjaman->sisa_pinjaman : 0;
         
         if ($validated['jumlah'] > $sisaPinjaman) {
             return back()->withErrors(['jumlah' => 'Jumlah pengembalian melebihi sisa pinjaman. Sisa: ' . $sisaPinjaman])->withInput();
@@ -55,6 +49,10 @@ class PengembalianController extends Controller
         // All new returns should start as pending by default
         if (!isset($validated['status_pengembalian'])) {
             $validated['status_pengembalian'] = 'pending';
+        }
+        // Map 'rusak' to 'rusak berat' to satisfy DB enum constraints
+        if ($validated['kondisi_Aset'] === 'rusak') {
+            $validated['kondisi_Aset'] = 'rusak berat';
         }
         
         $pengembalian = Pengembalian::create($validated);
@@ -92,6 +90,12 @@ class PengembalianController extends Controller
         ]);
 
         $validated['id_peminjaman'] = $validated['Id_peminjaman'];
+        
+        // Map 'rusak' to 'rusak berat' to satisfy DB enum constraints
+        if ($validated['kondisi_Aset'] === 'rusak') {
+            $validated['kondisi_Aset'] = 'rusak berat';
+        }
+
         $pengembalian->update($validated);
 
         return redirect()->route('admin.returns.index')->with('success', 'Pengembalian berhasil diperbarui.');

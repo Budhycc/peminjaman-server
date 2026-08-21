@@ -23,13 +23,5 @@ class Pengembalian extends Model
         return $this->belongsTo(Peminjaman::class, "id_peminjaman", "Id_peminjaman");
     }
 
-    public function getKondisiAsetAttribute($value)
-    {
-        return str_starts_with($value, 'rusak') ? 'rusak' : 'baik';
-    }
 
-    public function setKondisiAsetAttribute($value)
-    {
-        $this->attributes['kondisi_Aset'] = $value === 'rusak' ? 'rusak berat' : 'baik';
-    }
 }

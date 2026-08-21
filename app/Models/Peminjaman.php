@@ -28,14 +28,23 @@ class Peminjaman extends Model
     }
 
     public function pengembalian() {
-        return $this->hasOne(Pengembalian::class, "id_peminjaman", "Id_peminjaman");
+        return $this->hasMany(Pengembalian::class, "id_peminjaman", "Id_peminjaman");
+    }
+
+    public function getSisaPinjamanAttribute() {
+        $dikembalikan = $this->pengembalian()
+            ->where('status_pengembalian', '!=', 'ditolak')
+            ->sum('jumlah');
+        return max(0, $this->jumlah - $dikembalikan);
     }
 
     public function getLamaPinjamAttribute() {
         $pinjam = \Carbon\Carbon::parse($this->Tanggal_pinjam);
         
-        if ($this->pengembalian) {
-            $kembali = \Carbon\Carbon::parse($this->pengembalian->tanggal_kembali);
+        if ($this->pengembalian->count() > 0) {
+            // Use the date of the most recent return
+            $lastReturn = $this->pengembalian->sortByDesc('tanggal_kembali')->first();
+            $kembali = \Carbon\Carbon::parse($lastReturn->tanggal_kembali);
         } else {
             $kembali = \Carbon\Carbon::now();
         }
