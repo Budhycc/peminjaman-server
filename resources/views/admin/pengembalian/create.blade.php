@@ -26,7 +26,7 @@
             <select name="Id_peminjaman" id="Id_peminjaman" class="form-control" required>
                 <option value="">Pilih Peminjaman</option>
                 @foreach($peminjamans as $peminjaman)
-                    <option value="{{ $peminjaman->Id_peminjaman }}" {{ old('Id_peminjaman') == $peminjaman->Id_peminjaman ? 'selected' : '' }}>
+                    <option value="{{ $peminjaman->Id_peminjaman }}" {{ old('Id_peminjaman', $selectedPeminjamanId ?? '') == $peminjaman->Id_peminjaman ? 'selected' : '' }}>
                         #PMJ-{{ str_pad($peminjaman->Id_peminjaman, 3, '0', STR_PAD_LEFT) }} - {{ $peminjaman->user->nama_pengguna ?? 'Unknown' }} - {{ $peminjaman->aset->nama_Aset ?? 'Unknown' }}
                     </option>
                 @endforeach
@@ -58,3 +58,15 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#Id_peminjaman').select2({
+            placeholder: 'Pilih Peminjaman',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush

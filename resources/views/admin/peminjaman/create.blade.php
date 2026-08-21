@@ -64,3 +64,20 @@
     </form>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#id_pengguna').select2({
+            placeholder: 'Pilih User',
+            allowClear: true,
+            width: '100%'
+        });
+        $('#Id_Aset').select2({
+            placeholder: 'Pilih Aset',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush

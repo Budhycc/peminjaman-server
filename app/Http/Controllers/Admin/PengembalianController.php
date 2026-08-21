@@ -16,7 +16,7 @@ class PengembalianController extends Controller
         return view('admin.pengembalian.index', compact('pengembalian'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $peminjamans = Peminjaman::with(['user', 'aset'])->get()->filter(function ($p) {
             $dikembalikan = \App\Models\Pengembalian::where('id_peminjaman', $p->Id_peminjaman)
@@ -24,7 +24,9 @@ class PengembalianController extends Controller
                 ->sum('jumlah');
             return $p->jumlah > $dikembalikan;
         });
-        return view('admin.pengembalian.create', compact('peminjamans'));
+        
+        $selectedPeminjamanId = $request->query('peminjaman_id');
+        return view('admin.pengembalian.create', compact('peminjamans', 'selectedPeminjamanId'));
     }
 
     public function store(Request $request)
