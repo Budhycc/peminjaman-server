@@ -375,6 +375,9 @@ Mendapatkan data aset dari kode unik QR.
       "catatan": "Kondisi baik"            // String, Optional
   }
   ```
+- **Catatan Penting:** 
+  - Pengembalian yang diajukan oleh User akan otomatis berstatus **`pending`**.
+  - Stok ketersediaan aset tidak akan bertambah sebelum Admin memverifikasi dan menyetujui pengembalian ini melalui Dashboard Admin.
 - **Response Sukses (201 Created):**
   ```json
   {
@@ -382,7 +385,8 @@ Mendapatkan data aset dari kode unik QR.
       "id_peminjaman": 1,
       "jumlah": 2,
       "tanggal_kembali": "2026-08-25 15:30:00",
-      "kondisi_Aset": "baik"
+      "kondisi_Aset": "baik",
+      "status_pengembalian": "pending"
   }
   ```
 - **Response Gagal (400 Bad Request - Sudah dikembalikan):**

@@ -288,7 +288,7 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
 #### 3. Pengembalian Aset
 - **Endpoint:** `POST /api/returns`
 - **Akses:** Semua Role
-- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Status `peminjaman` diubah jadi `dikembalikan` dan aset bisa diakses (menjadi `tersedia`) oleh orang lain lagi. Aktivitas ini juga akan direkam pada Log Aktivitas sistem.
+- **Deskripsi:** Menyelesaikan transaksi peminjaman (pengembalian). Pengembalian akan masuk dengan status **pending**. Admin harus memverifikasi dan menyetujuinya di Dashboard agar aset tersebut kembali menjadi `tersedia` (bisa dipinjam oleh orang lain). Aktivitas ini juga akan direkam pada Log Aktivitas sistem.
 - **Request Body (JSON):**
   - `Id_peminjaman`: (Integer) Wajib. Merupakan ID dari tabel transaksi peminjaman (Bukan ID Aset). Anda bisa mendapatkan ID ini dari riwayat peminjaman (`/api/loans/my-history`). Gunakan huruf 'I' kapital.
   - `kondisi_Aset`: (String) Wajib. Hanya menerima 3 nilai (huruf kecil semua): `"baik"`, `"rusak ringan"`, atau `"rusak berat"`.
@@ -307,6 +307,7 @@ Serta sangat disarankan untuk mengatur header `Accept: application/json`.
       "id_peminjaman": 1,
       "Tanggal_dikembalikan": "2026-06-20 16:30:00",
       "kondisi_Aset": "baik",
+      "status_pengembalian": "pending",
       "created_at": "2026-06-20T16:30:00.000000Z",
       "updated_at": "2026-06-20T16:30:00.000000Z"
   }
@@ -382,8 +383,9 @@ Selain melalui API, sistem ini juga menyediakan **Web Admin Dashboard** yang ter
 ### Fitur Utama di Admin Dashboard:
 - **Dashboard Overview:** Menampilkan ringkasan dan statistik jumlah user, total aset, peminjaman aktif, aset tersedia, beserta grafik jumlah peminjaman bulanan.
 - **Manajemen User:** Menambah, mengubah, melihat detail, dan menghapus akun pengguna (admin/user).
-- **Manajemen Aset:** Mengelola data aset termasuk unggah foto, penempatan baris (row), dan mengubah status ketersediaan.
-- **Transaksi Peminjaman & Pengembalian:** Memantau seluruh aktivitas peminjaman secara langsung dan mencatat data pengembalian aset.
+- **Manajemen Aset:** Mengelola data aset termasuk unggah foto, penempatan baris (row), mencatat jumlah barang rusak, mengubah status ketersediaan, hingga mencatat aset yang sedang/selesai **diperbaiki** (`jumlah_diperbaiki`).
+- **Transaksi Peminjaman & Pengembalian:** Memantau seluruh aktivitas peminjaman. Antarmuka telah diperbarui dengan fitur pencarian **Dropdown (Select2)** untuk ribuan data, serta dilengkapi **tombol jalan pintas "Kembalikan Aset"** pada daftar peminjaman aktif.
+- **Sistem Verifikasi Pengembalian (Baru):** Setiap kali barang dikembalikan (oleh User melalui API maupun form di dashboard), statusnya akan menjadi **Pending**. Admin bertugas memverifikasi fisik barang dan mengubah statusnya menjadi **Disetujui** sebelum stok barang resmi bertambah kembali ke gudang (ketersediaan).
 - **Laporan (Reports):** Menampilkan rekapitulasi data riwayat peminjaman beserta detail pengembalian aset yang dilengkapi dengan fitur **Filter Berdasarkan Tanggal** dan kemampuan untuk **Cetak Laporan** ke format print/PDF.
 
 ### Cara Mengakses Dashboard
