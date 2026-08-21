@@ -22,21 +22,34 @@
     </div>
 
     <div style="margin-bottom: 20px;">
-        <strong>Aset:</strong> {{ $pengembalian->peminjaman->aset->nama_Aset ?? 'Unknown' }} (Row: {{ $pengembalian->peminjaman->aset->Row ?? '-' }})
+        <strong>Aset:</strong> {{ $pengembalian->peminjaman->aset->nama_Aset ?? 'Unknown' }} (Jenis: {{ $pengembalian->peminjaman->aset->jenis_barang ?? '-' }}, Tempat: {{ $pengembalian->peminjaman->aset->tempat_barang ?? '-' }})
     </div>
 
     <div style="margin-bottom: 20px;">
-        <strong>Tanggal Kembali:</strong> {{ \Carbon\Carbon::parse($pengembalian->tanggal_kembali)->format('d M Y H:i') }}
+        <strong>Tanggal Kembali:</strong> {{ \Carbon\Carbon::parse($pengembalian->tanggal_kembali)->format('d F Y H:i') }}
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <strong>Lama Pinjam:</strong> {{ $pengembalian->peminjaman->lama_pinjam }}
     </div>
 
     <div style="margin-bottom: 20px;">
         <strong>Kondisi Saat Kembali:</strong> 
         @if($pengembalian->kondisi_Aset == 'baik')
             <span class="status-badge completed">Baik</span>
-        @elseif($pengembalian->kondisi_Aset == 'rusak ringan')
-            <span class="status-badge pending">Rusak Ringan</span>
         @else
-            <span class="status-badge rejected">Rusak Berat</span>
+            <span class="status-badge rejected">Rusak</span>
+        @endif
+    </div>
+
+    <div style="margin-bottom: 20px;">
+        <strong>Status Verifikasi:</strong> 
+        @if($pengembalian->status_pengembalian == 'pending')
+            <span class="status-badge pending" style="background-color: #fef3c7; color: #d97706;">Pending</span>
+        @elseif($pengembalian->status_pengembalian == 'disetujui')
+            <span class="status-badge completed" style="background-color: #d1fae5; color: #059669;">Disetujui</span>
+        @else
+            <span class="status-badge rejected" style="background-color: #fee2e2; color: #dc2626;">Ditolak</span>
         @endif
     </div>
 

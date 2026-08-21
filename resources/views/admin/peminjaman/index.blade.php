@@ -20,8 +20,9 @@
                     <th>ID</th>
                     <th>User</th>
                     <th>Aset</th>
+                    <th>Jumlah</th>
                     <th>Tgl Pinjam</th>
-                    <th>Rencana Kembali</th>
+                    <th>Lama Pinjam</th>
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -32,8 +33,9 @@
                     <td>#PMJ-{{ str_pad($item->Id_peminjaman, 3, '0', STR_PAD_LEFT) }}</td>
                     <td>{{ $item->user->nama_pengguna ?? 'Unknown' }}</td>
                     <td>{{ $item->aset->nama_Aset ?? 'Unknown' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->Tanggal_pinjam)->format('d M Y') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->Tanggal_kembali)->format('d M Y') }}</td>
+                    <td>{{ $item->jumlah }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->Tanggal_pinjam)->format('d M Y H:i') }}</td>
+                    <td>{{ $item->lama_pinjam }}</td>
                     <td>
                         @if(!$item->pengembalian)
                             <span class="status-badge active">Dipinjam</span>

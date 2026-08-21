@@ -31,6 +31,16 @@
         </div>
 
         <div class="form-group">
+            <label for="jumlah">Jumlah/Quantity (Total)</label>
+            <input type="number" name="jumlah" id="jumlah" class="form-control" value="{{ old('jumlah', $aset->jumlah) }}" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label for="jumlah_diperbaiki">Jumlah Diperbaiki (Stok Rusak Saat Ini: {{ $aset->jumlah_rusak }})</label>
+            <input type="number" name="jumlah_diperbaiki" id="jumlah_diperbaiki" class="form-control" value="{{ old('jumlah_diperbaiki', $aset->jumlah_diperbaiki) }}" min="0" max="{{ $aset->jumlah_diperbaiki + $aset->jumlah_rusak }}">
+            <small class="text-muted" style="display: block; margin-top: 5px;">Isi dengan jumlah barang yang sudah diperbaiki sehingga kembali tersedia.</small>
+        </div>
+        <div class="form-group">
             <label for="status_aset">Status</label>
             <select name="status_aset" id="status_aset" class="form-control" required>
                 <option value="tersedia" {{ old('status_aset', $aset->status_aset) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
@@ -39,8 +49,13 @@
         </div>
 
         <div class="form-group">
-            <label for="Row">Row</label>
-            <input type="text" name="Row" id="Row" class="form-control" value="{{ old('Row', $aset->Row) }}">
+            <label for="jenis_barang">Jenis Barang</label>
+            <input type="text" name="jenis_barang" id="jenis_barang" class="form-control" value="{{ old('jenis_barang', $aset->jenis_barang) }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tempat_barang">Tempat/Alamat Barang (Opsional)</label>
+            <input type="text" name="tempat_barang" id="tempat_barang" class="form-control" value="{{ old('tempat_barang', $aset->tempat_barang) }}">
         </div>
 
         <div class="form-group">

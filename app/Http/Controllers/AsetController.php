@@ -20,7 +20,9 @@ class AsetController extends Controller
         $validated = $request->validate([
             'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50',
+            'jumlah' => 'required|integer|min:1',
+            'jenis_barang' => 'required|string|max:100',
+            'tempat_barang' => 'nullable|string|max:150',
             'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
@@ -54,7 +56,9 @@ class AsetController extends Controller
         $validated = $request->validate([
             'nama_Aset' => 'sometimes|string|max:100',
             'status_aset' => 'sometimes|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50',
+            'jumlah' => 'sometimes|integer|min:1',
+            'jenis_barang' => 'sometimes|string|max:100',
+            'tempat_barang' => 'nullable|string|max:150',
             'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 

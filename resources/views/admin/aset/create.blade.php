@@ -29,6 +29,12 @@
         </div>
 
         <div class="form-group">
+            <label for="jumlah">Jumlah/Quantity</label>
+            <input type="number" name="jumlah" id="jumlah" class="form-control" value="{{ old('jumlah', 1) }}" min="1" required>
+        </div>
+
+
+        <div class="form-group">
             <label for="status_aset">Status</label>
             <select name="status_aset" id="status_aset" class="form-control" required>
                 <option value="tersedia" {{ old('status_aset') == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
@@ -37,8 +43,13 @@
         </div>
 
         <div class="form-group">
-            <label for="Row">Row</label>
-            <input type="text" name="Row" id="Row" class="form-control" value="{{ old('Row') }}">
+            <label for="jenis_barang">Jenis Barang</label>
+            <input type="text" name="jenis_barang" id="jenis_barang" class="form-control" value="{{ old('jenis_barang') }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tempat_barang">Tempat/Alamat Barang (Opsional)</label>
+            <input type="text" name="tempat_barang" id="tempat_barang" class="form-control" value="{{ old('tempat_barang') }}">
         </div>
 
         <div class="form-group">

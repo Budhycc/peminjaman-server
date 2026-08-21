@@ -19,28 +19,36 @@ class PeminjamanController extends Controller
     public function create()
     {
         $users = User::all();
-        $asets = Aset::where('status', 'tersedia')->get();
+        $asets = Aset::get()->filter(function($aset) {
+            return $aset->jumlah_tersedia > 0;
+        });
         return view('admin.peminjaman.create', compact('users', 'asets'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id_pengguna' => 'required|exists:users,id_user',
-            'Id_Aset' => 'required|exists:aset,id_aset',
+            'id_pengguna' => 'required|exists:users,id_pengguna',
+            'Id_Aset' => 'required|exists:aset,Id_Aset',
+            'jumlah' => 'required|integer|min:1',
             'Tanggal_pinjam' => 'required|date',
-            'Tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
             'catatan' => 'nullable|string'
         ]);
 
-        $validated['status'] = 'dipinjam';
+        $aset = Aset::find($validated['Id_Aset']);
+        if ($validated['jumlah'] > $aset->jumlah_tersedia) {
+            return back()->withErrors(['jumlah' => 'Jumlah aset yang tersedia tidak mencukupi. Tersedia: ' . $aset->jumlah_tersedia])->withInput();
+        }
+
+        $validated['id_Aset'] = $validated['Id_Aset'];
         
         $peminjaman = Peminjaman::create($validated);
 
         // Update status aset
-        $aset = Aset::find($validated['Id_Aset']);
         if ($aset) {
-            $aset->update(['status' => 'dipinjam']);
+            if ($aset->jumlah_tersedia == 0) {
+                $aset->update(['status_aset' => 'dipinjam']);
+            }
         }
 
         return redirect()->route('admin.loans.index')->with('success', 'Peminjaman berhasil ditambahkan.');
@@ -65,31 +73,46 @@ class PeminjamanController extends Controller
         $peminjaman = Peminjaman::findOrFail($id);
 
         $validated = $request->validate([
-            'id_pengguna' => 'required|exists:users,id_user',
-            'Id_Aset' => 'required|exists:aset,id_aset',
+            'id_pengguna' => 'required|exists:users,id_pengguna',
+            'Id_Aset' => 'required|exists:aset,Id_Aset',
+            'jumlah' => 'required|integer|min:1',
             'Tanggal_pinjam' => 'required|date',
-            'Tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
-            'status' => 'required|in:dipinjam,dikembalikan',
             'catatan' => 'nullable|string'
         ]);
+
+        $validated['id_Aset'] = $validated['Id_Aset'];
+
+        // Check availability if increasing jumlah or changing aset
+        $newAset = Aset::find($validated['Id_Aset']);
+        if ($newAset) {
+            $available = $newAset->jumlah_tersedia;
+            // If it's the same aset and status is still dipinjam, we must add back the old amount before checking
+            if ($peminjaman->Id_Aset == $validated['Id_Aset'] && !$peminjaman->pengembalian) {
+                $available += $peminjaman->jumlah;
+            }
+            
+            if (!$peminjaman->pengembalian && $validated['jumlah'] > $available) {
+                return back()->withErrors(['jumlah' => 'Jumlah aset yang tersedia tidak mencukupi. Tersedia: ' . $available])->withInput();
+            }
+        }
 
         // Handle aset status if aset changed
         if ($peminjaman->Id_Aset != $validated['Id_Aset']) {
             $oldAset = Aset::find($peminjaman->Id_Aset);
-            if ($oldAset) $oldAset->update(['status' => 'tersedia']);
+            if ($oldAset && $oldAset->jumlah_tersedia > 0) $oldAset->update(['status_aset' => 'tersedia']);
             
             $newAset = Aset::find($validated['Id_Aset']);
-            if ($newAset && $validated['status'] == 'dipinjam') {
-                $newAset->update(['status' => 'dipinjam']);
+            if ($newAset && $newAset->jumlah_tersedia == 0) {
+                $newAset->update(['status_aset' => 'dipinjam']);
             }
         } else {
-            // Same aset, just check status
+            // Same aset, check if it needs status update
             $aset = Aset::find($validated['Id_Aset']);
             if ($aset) {
-                if ($validated['status'] == 'dipinjam') {
-                    $aset->update(['status' => 'dipinjam']);
-                } else {
-                    $aset->update(['status' => 'tersedia']);
+                if ($aset->jumlah_tersedia == 0) {
+                    $aset->update(['status_aset' => 'dipinjam']);
+                } elseif ($aset->jumlah_tersedia > 0) {
+                    $aset->update(['status_aset' => 'tersedia']);
                 }
             }
         }
@@ -103,10 +126,11 @@ class PeminjamanController extends Controller
     {
         $peminjaman = Peminjaman::findOrFail($id);
         
-        if ($peminjaman->status == 'dipinjam') {
+        if (!$peminjaman->pengembalian) {
             $aset = Aset::find($peminjaman->Id_Aset);
-            if ($aset) {
-                $aset->update(['status' => 'tersedia']);
+            // Since it's deleted, effectively returned, recheck availability
+            if ($aset && ($aset->jumlah_tersedia + $peminjaman->jumlah) > 0) {
+                $aset->update(['status_aset' => 'tersedia']);
             }
         }
 

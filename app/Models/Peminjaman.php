@@ -14,6 +14,7 @@ class Peminjaman extends Model
     protected $fillable = [
         "id_pengguna",
         "id_Aset",
+        "jumlah",
         "Tanggal_pinjam",
         "Tanggal_kembali"
     ];
@@ -28,5 +29,34 @@ class Peminjaman extends Model
 
     public function pengembalian() {
         return $this->hasOne(Pengembalian::class, "id_peminjaman", "Id_peminjaman");
+    }
+
+    public function getLamaPinjamAttribute() {
+        $pinjam = \Carbon\Carbon::parse($this->Tanggal_pinjam);
+        
+        if ($this->pengembalian) {
+            $kembali = \Carbon\Carbon::parse($this->pengembalian->tanggal_kembali);
+        } else {
+            $kembali = \Carbon\Carbon::now();
+        }
+        
+        $diff = $pinjam->diff($kembali);
+        $parts = [];
+        if ($diff->d > 0 || $diff->m > 0 || $diff->y > 0) {
+            $days = $diff->days; // total days
+            $parts[] = $days . ' Hari';
+        }
+        if ($diff->h > 0) {
+            $parts[] = $diff->h . ' Jam';
+        }
+        if ($diff->i > 0 && empty($parts)) {
+            $parts[] = $diff->i . ' Menit';
+        }
+        
+        if (empty($parts)) {
+            return 'Baru saja';
+        }
+        
+        return implode(' ', $parts);
     }
 }

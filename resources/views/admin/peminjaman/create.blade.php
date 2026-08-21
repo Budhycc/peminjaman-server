@@ -39,21 +39,23 @@
                 <option value="">Pilih Aset</option>
                 @foreach($asets as $aset)
                     <option value="{{ $aset->Id_Aset }}" {{ old('Id_Aset') == $aset->Id_Aset ? 'selected' : '' }}>
-                        {{ $aset->nama_Aset }} (Row: {{ $aset->Row }})
+                        {{ $aset->nama_Aset }} (Tersedia: {{ $aset->jumlah_tersedia }})
                     </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <label for="Tanggal_pinjam">Tanggal Pinjam</label>
-            <input type="datetime-local" name="Tanggal_pinjam" id="Tanggal_pinjam" class="form-control" value="{{ old('Tanggal_pinjam') }}" required>
+            <label for="jumlah">Jumlah Pinjam</label>
+            <input type="number" name="jumlah" id="jumlah" class="form-control" value="{{ old('jumlah', 1) }}" min="1" required>
         </div>
 
         <div class="form-group">
-            <label for="Tanggal_kembali">Tanggal Kembali (Rencana)</label>
-            <input type="datetime-local" name="Tanggal_kembali" id="Tanggal_kembali" class="form-control" value="{{ old('Tanggal_kembali') }}" required>
+            <label for="Tanggal_pinjam">Tanggal Pinjam</label>
+            <input type="datetime-local" name="Tanggal_pinjam" id="Tanggal_pinjam" class="form-control" value="{{ old('Tanggal_pinjam', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
         </div>
+
+
 
         <div style="margin-top: 30px;">
             <button type="submit" class="btn-primary">Simpan Peminjaman</button>

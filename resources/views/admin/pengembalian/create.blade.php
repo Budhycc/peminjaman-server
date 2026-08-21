@@ -34,6 +34,11 @@
         </div>
 
         <div class="form-group">
+            <label for="jumlah">Jumlah Dikembalikan</label>
+            <input type="number" name="jumlah" id="jumlah" class="form-control" value="{{ old('jumlah', 1) }}" min="1" required>
+        </div>
+
+        <div class="form-group">
             <label for="tanggal_kembali">Tanggal Kembali</label>
             <input type="datetime-local" name="tanggal_kembali" id="tanggal_kembali" class="form-control" value="{{ old('tanggal_kembali', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
         </div>
@@ -41,9 +46,8 @@
         <div class="form-group">
             <label for="kondisi_Aset">Kondisi Aset Saat Dikembalikan</label>
             <select name="kondisi_Aset" id="kondisi_Aset" class="form-control" required>
-                <option value="baik" {{ old('kondisi_Aset') == 'baik' ? 'selected' : '' }}>Baik</option>
-                <option value="rusak ringan" {{ old('kondisi_Aset') == 'rusak ringan' ? 'selected' : '' }}>Rusak Ringan</option>
-                <option value="rusak berat" {{ old('kondisi_Aset') == 'rusak berat' ? 'selected' : '' }}>Rusak Berat</option>
+                <option value="baik" {{ old('kondisi_Aset', 'baik') == 'baik' ? 'selected' : '' }}>Baik</option>
+                <option value="rusak" {{ old('kondisi_Aset') == 'rusak' ? 'selected' : '' }}>Rusak</option>
             </select>
         </div>
 

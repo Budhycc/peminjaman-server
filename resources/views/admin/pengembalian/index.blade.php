@@ -20,8 +20,11 @@
                     <th>ID</th>
                     <th>User</th>
                     <th>Aset</th>
+                    <th>Jumlah</th>
                     <th>Tgl Kembali</th>
+                    <th>Lama Pinjam</th>
                     <th>Kondisi</th>
+                    <th>Status</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -31,14 +34,23 @@
                     <td>#KMB-{{ str_pad($item->id_pengembalian, 3, '0', STR_PAD_LEFT) }}</td>
                     <td>{{ $item->peminjaman->user->nama_pengguna ?? 'Unknown' }}</td>
                     <td>{{ $item->peminjaman->aset->nama_Aset ?? 'Unknown' }}</td>
-                    <td>{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</td>
+                    <td>{{ $item->jumlah }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y H:i') }}</td>
+                    <td>{{ $item->peminjaman->lama_pinjam }}</td>
                     <td>
                         @if($item->kondisi_Aset == 'baik')
                             <span class="status-badge completed">Baik</span>
-                        @elseif($item->kondisi_Aset == 'rusak ringan')
-                            <span class="status-badge pending">Rusak Ringan</span>
                         @else
-                            <span class="status-badge rejected">Rusak Berat</span>
+                            <span class="status-badge rejected">Rusak</span>
+                        @endif
+                    </td>
+                    <td>
+                        @if($item->status_pengembalian == 'pending')
+                            <span class="status-badge pending" style="background-color: #fef3c7; color: #d97706;">Pending</span>
+                        @elseif($item->status_pengembalian == 'disetujui')
+                            <span class="status-badge completed" style="background-color: #d1fae5; color: #059669;">Disetujui</span>
+                        @else
+                            <span class="status-badge rejected" style="background-color: #fee2e2; color: #dc2626;">Ditolak</span>
                         @endif
                     </td>
                     <td style="white-space: nowrap;">
@@ -53,7 +65,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" style="text-align: center;">Belum ada data pengembalian.</td>
+                    <td colspan="9" style="text-align: center;">Belum ada data pengembalian.</td>
                 </tr>
                 @endforelse
             </tbody>

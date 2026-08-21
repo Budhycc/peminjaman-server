@@ -27,7 +27,9 @@ class AsetController extends Controller
         $validated = $request->validate([
             'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50',
+            'jumlah' => 'required|integer|min:1',
+            'jenis_barang' => 'required|string|max:100',
+            'tempat_barang' => 'nullable|string|max:150',
             'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
@@ -59,9 +61,21 @@ class AsetController extends Controller
         $validated = $request->validate([
             'nama_Aset' => 'required|string|max:100',
             'status_aset' => 'required|in:tersedia,dipinjam',
-            'Row' => 'nullable|string|max:50',
+            'jumlah' => 'required|integer|min:1',
+            'jumlah_diperbaiki' => 'nullable|integer|min:0',
+            'jenis_barang' => 'required|string|max:100',
+            'tempat_barang' => 'nullable|string|max:150',
             'foto_aset' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
+
+        if (isset($validated['jumlah_diperbaiki'])) {
+            // Can't repair more than what is broken
+            if ($validated['jumlah_diperbaiki'] > ($aset->jumlah_diperbaiki + $aset->jumlah_rusak)) {
+                return back()->withErrors(['jumlah_diperbaiki' => 'Jumlah barang yang diperbaiki melebihi stok yang rusak.'])->withInput();
+            }
+        } else {
+            $validated['jumlah_diperbaiki'] = $aset->jumlah_diperbaiki;
+        }
 
         if ($request->hasFile('foto_aset')) {
             if ($aset->foto_aset) {

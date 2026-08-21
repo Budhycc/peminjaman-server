@@ -18,15 +18,17 @@
     </div>
 
     <div style="margin-bottom: 20px;">
-        <strong>Aset:</strong> {{ $peminjaman->aset->nama_Aset ?? 'Unknown' }} (Row: {{ $peminjaman->aset->Row ?? '-' }})
+        <strong>Aset:</strong> {{ $peminjaman->aset->nama_Aset ?? 'Unknown' }} (Jenis: {{ $peminjaman->aset->jenis_barang ?? '-' }}, Tempat: {{ $peminjaman->aset->tempat_barang ?? '-' }})
     </div>
 
     <div style="margin-bottom: 20px;">
         <strong>Tanggal Pinjam:</strong> {{ \Carbon\Carbon::parse($peminjaman->Tanggal_pinjam)->format('d M Y H:i') }}
     </div>
 
+
+
     <div style="margin-bottom: 20px;">
-        <strong>Rencana Kembali:</strong> {{ \Carbon\Carbon::parse($peminjaman->Tanggal_kembali)->format('d M Y H:i') }}
+        <strong>Lama Pinjam:</strong> {{ $peminjaman->lama_pinjam }}
     </div>
 
     <div style="margin-bottom: 20px;">

@@ -19,31 +19,35 @@ class PengembalianController extends Controller
     {
         $validated = $request->validate([
             'Id_peminjaman' => 'required|exists:peminjaman,id_peminjaman',
-            'kondisi_Aset' => 'required|in:baik,rusak ringan,rusak berat',
+            'jumlah' => 'required|integer|min:1',
+            'kondisi_Aset' => 'required|in:baik,rusak',
             'catatan' => 'nullable|string'
         ]);
 
         $peminjaman = Peminjaman::with('aset')->findOrFail($validated['Id_peminjaman']);
 
-        if (Pengembalian::where('id_peminjaman', $validated['Id_peminjaman'])->exists()) {
-            return response()->json(['message' => 'Aset has already been returned'], 400);
+        $totalDikembalikan = Pengembalian::where('id_peminjaman', $validated['Id_peminjaman'])->sum('jumlah');
+        $sisaPinjaman = $peminjaman->jumlah - $totalDikembalikan;
+
+        if ($validated['jumlah'] > $sisaPinjaman) {
+            return response()->json(['message' => 'Jumlah pengembalian melebihi sisa pinjaman. Sisa yang harus dikembalikan: ' . $sisaPinjaman], 400);
         }
 
         DB::beginTransaction();
         try {
             $pengembalian = Pengembalian::create([
                 'id_peminjaman' => $peminjaman->Id_peminjaman,
+                'jumlah' => $validated['jumlah'],
                 'tanggal_kembali' => now(),
                 'kondisi_Aset' => $validated['kondisi_Aset']
             ]);
 
-            $peminjaman->aset->update([
-                'status_aset' => 'tersedia'
-            ]);
+            // Aset availability is calculated dynamically, no need to update status_aset here.
+            // Furthermore, the return is now pending verification.
 
             LogAktivitas::create([
                 'id_pengguna' => $request->user()->id_pengguna,
-                'Aktivitas' => 'Pengembalian aset ' . $peminjaman->aset->nama_Aset,
+                'Aktivitas' => 'Pengembalian aset ' . $peminjaman->aset->nama_Aset . ' sejumlah ' . $validated['jumlah'],
                 'waktu' => now()
             ]);
 

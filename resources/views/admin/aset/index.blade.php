@@ -20,8 +20,10 @@
                     <th>ID Aset</th>
                     <th style="text-align: center;">Foto</th>
                     <th>Nama Aset</th>
+                    <th>Jumlah (Sedia/Rusak/Total)</th>
+                    <th>Jenis Barang</th>
+                    <th>Tempat/Alamat</th>
                     <th>Status</th>
-                    <th>Row</th>
                     <th style="text-align: center;">Kode QR</th>
                     <th>Aksi</th>
                 </tr>
@@ -41,6 +43,13 @@
                     </td>
                     <td>{{ $aset->nama_Aset }}</td>
                     <td>
+                        <span style="font-weight: 600; color: var(--primary);" title="Tersedia">{{ $aset->jumlah_tersedia }}</span>
+                        <span style="color: #ef4444; font-size: 0.9em; margin: 0 4px;" title="Rusak">{{ $aset->jumlah_rusak > 0 ? $aset->jumlah_rusak : '' }}</span>
+                        <span style="color: #94a3b8; font-size: 0.9em;" title="Total">/ {{ $aset->jumlah }}</span>
+                    </td>
+                    <td>{{ $aset->jenis_barang }}</td>
+                    <td>{{ $aset->tempat_barang ?? '-' }}</td>
+                    <td>
                         @if($aset->status_aset == 'tersedia')
                             <span class="status-badge completed">Tersedia</span>
                         @elseif($aset->status_aset == 'dipinjam')
@@ -49,7 +58,6 @@
                             <span class="status-badge">{{ ucfirst($aset->status_aset) }}</span>
                         @endif
                     </td>
-                    <td>{{ $aset->Row }}</td>
                     <td style="text-align: center; vertical-align: middle;">
                         @if($aset->qrCode)
                             <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">

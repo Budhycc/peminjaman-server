@@ -34,21 +34,21 @@
     <div class="stat-card">
         <div class="stat-icon assets"><i class="fas fa-box"></i></div>
         <div class="stat-details">
-            <h3>Total Aset</h3>
+            <h3>Total Barang</h3>
             <p class="stat-number">{{ $totalAset }}</p>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon returns" style="background-color: rgba(16, 185, 129, 0.1); color: var(--success);"><i class="fas fa-check"></i></div>
         <div class="stat-details">
-            <h3>Aset Tersedia</h3>
+            <h3>Barang Tersedia</h3>
             <p class="stat-number">{{ $asetTersedia }}</p>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon borrows"><i class="fas fa-hand-holding"></i></div>
         <div class="stat-details">
-            <h3>Peminjaman Aktif</h3>
+            <h3>Sedang Dipinjam</h3>
             <p class="stat-number">{{ $peminjamanAktif }}</p>
         </div>
     </div>

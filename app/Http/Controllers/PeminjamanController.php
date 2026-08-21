@@ -31,15 +31,17 @@ class PeminjamanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'Id_Aset' => 'required|exists:aset,id_aset',
-            'Tanggal_kembali' => 'required|date|after:now',
+            'Id_Aset' => 'required|exists:aset,Id_Aset',
+            'jumlah' => 'required|integer|min:1',
             'catatan' => 'nullable|string'
         ]);
 
         $aset = Aset::findOrFail($validated['Id_Aset']);
 
-        if ($aset->status_aset !== 'tersedia') {
-            return response()->json(['message' => 'Aset is not available for borrowing'], 400);
+        $jumlahTersedia = $aset->jumlah_tersedia;
+
+        if ($validated['jumlah'] > $jumlahTersedia) {
+            return response()->json(['message' => 'Jumlah aset yang tersedia tidak mencukupi. Tersedia: ' . $jumlahTersedia], 400);
         }
 
         DB::beginTransaction();
@@ -47,15 +49,17 @@ class PeminjamanController extends Controller
             $peminjaman = Peminjaman::create([
                 'id_pengguna' => $request->user()->id_pengguna,
                 'id_Aset' => $aset->Id_Aset,
-                'Tanggal_pinjam' => now(),
-                'Tanggal_kembali' => $validated['Tanggal_kembali']
+                'jumlah' => $validated['jumlah'],
+                'Tanggal_pinjam' => now()
             ]);
 
-            $aset->update(['status_aset' => 'dipinjam']);
+            if ($aset->jumlah_tersedia == 0) {
+                $aset->update(['status_aset' => 'dipinjam']);
+            }
 
             LogAktivitas::create([
                 'id_pengguna' => $request->user()->id_pengguna,
-                'Aktivitas' => 'Peminjaman aset ' . $aset->nama_Aset,
+                'Aktivitas' => 'Peminjaman aset ' . $aset->nama_Aset . ' sejumlah ' . $validated['jumlah'],
                 'waktu' => now()
             ]);
 
