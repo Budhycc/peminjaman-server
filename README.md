@@ -397,3 +397,9 @@ Selain melalui API, sistem ini juga menyediakan **Web Admin Dashboard** yang ter
 2. Buka web browser Anda dan akses alamat: `http://localhost:8000/login` (atau URL root `http://localhost:8000`).
 3. Masuk menggunakan akun yang memiliki hak akses sebagai Admin (contoh default: username `admin` dan password `admin123`).
 4. Setelah berhasil login, Anda akan langsung diarahkan ke halaman utama Dashboard Peminjaman (`/admin/dashboard`).
+---
+
+## 6. License
+
+Sistem Peminjaman Aset Server ini berada di bawah lisensi open-source [MIT license](https://opensource.org/licenses/MIT).
+
